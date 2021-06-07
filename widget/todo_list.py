@@ -1,5 +1,6 @@
 from oauthlib.oauth2.rfc6749 import tokens
 import requests
+from requests.api import head
 from requests_oauthlib.oauth2_session import OAuth2Session
 import yaml
 import json
@@ -17,8 +18,8 @@ class TodoList(object):
         self.client_secret  = config.get("client_secret", "")
         self.redirect_uri   = config.get("redirect_uri", "")
         self.scope          = config.get("scopes", "")
-        self.auth_host      = config.get("auth_host", "")
-        self.api_host       = config.get("api_host", "")
+        self.auth_host      = "https://login.microsoftonline.com/common/oauth2/v2.0"
+        self.api_host       = "https://graph.microsoft.com/v1.0"
 
         # self.fetch_token()
         self.fetch_refresh_token()
@@ -45,7 +46,7 @@ class TodoList(object):
 
     def get_token(self):
         # check expiration
-        if (time.time() - self.token_create_time) < self.token_expire_time:
+        if (time.time() - self.token_create_time) > self.token_expire_time:
             new_tokens = self.oauth.refresh_token(self.auth_host + "/token", self.refresh_token, client_id=self.client_id, client_secret=self.client_secret)
             self.refresh_token      = new_tokens["refresh_token"]
             self.access_token       = new_tokens["access_token"]
@@ -56,13 +57,34 @@ class TodoList(object):
         
 
     def get_tasks(self):
+        token = self.get_token()
+        headers = {
+            "Authorization": "Bearer {}".format(token)
+        }
+        tasks = []
 
-        r = requests.get(self.host+"/open/v1/project/60bd8d9b4eafd122d7b8c925/task/0", headers={
-            "Authorization": "Bearer {}".format(self.token)
-        })
-        r
+        r = requests.get(self.api_host + "/me/todo/lists", headers=headers)
+        assert r.status_code == 200
+        lids = list(map(lambda x: (x["id"], x["displayName"]), r.json()["value"]))
+
+        for lid, lname in lids:
+            r= requests.get(self.api_host + "/me/todo/lists/{}/tasks".format(lid), headers=headers)
+            assert r.status_code == 200
+            for _ in r.json()["value"]:
+                tasks.append({
+                    "lid": lid, 
+                    "lname": lname, 
+                    "tid": _["id"], 
+                    "title": _["title"], 
+                    "status": _["status"], 
+                    "importance": _["importance"], 
+                })
+        
+        self.tasks = tasks
+        return tasks
+
 
 if __name__ == "__main__":
     f = yaml.load(open("configs/config.yml"))["todo_list"]
     t = TodoList(f)
-    t.get_token()
+    t.get_tasks()
