@@ -1,0 +1,9 @@
+configs/
+Background/
+FontLib/
+Function/
+FunIcon/
+Gifs/
+QR/
+**/__pycache__/
+**/.vscode/
