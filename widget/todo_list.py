@@ -14,6 +14,9 @@ os.environ["OAUTHLIB_IGNORE_SCOPE_CHANGE"]  = "1"
 
 class TodoList(object):
     def __init__(self, config):
+        self.provider = config.get("provider", {})
+
+        config = config.get(self.provider, {})
         self.client_id      = config.get("client_id", "")
         self.client_secret  = config.get("client_secret", "")
         self.redirect_uri   = config.get("redirect_uri", "")
