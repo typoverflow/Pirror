@@ -76,8 +76,10 @@ class TodoList(object):
                     "lname": lname, 
                     "tid": _["id"], 
                     "title": _["title"], 
+                    "body": _["body"], 
                     "status": _["status"], 
                     "importance": _["importance"], 
+                    "lastModifiedDatetime": _["lastModifiedDatetime"]
                 })
         
         self.tasks = tasks
