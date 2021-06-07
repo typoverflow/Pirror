@@ -12,17 +12,23 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"]   = "1"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"]    = "1"
 os.environ["OAUTHLIB_IGNORE_SCOPE_CHANGE"]  = "1"
 
-class TodoList(object):
+class TodoListWidget(object):
     def __init__(self, config):
         self.provider = config.get("provider", {})
+        if self.provider == {}:
+            raise ValueError("To do list provider not set!")
 
         config = config.get(self.provider, {})
-        self.client_id      = config.get("client_id", "")
-        self.client_secret  = config.get("client_secret", "")
-        self.redirect_uri   = config.get("redirect_uri", "")
-        self.scope          = config.get("scopes", "")
-        self.auth_host      = "https://login.microsoftonline.com/common/oauth2/v2.0"
-        self.api_host       = "https://graph.microsoft.com/v1.0"
+
+        if self.provider == "microsoft":
+            self.client_id      = config.get("client_id", "")
+            self.client_secret  = config.get("client_secret", "")
+            self.redirect_uri   = config.get("redirect_uri", "")
+            self.scope          = config.get("scopes", "")
+            self.auth_host      = "https://login.microsoftonline.com/common/oauth2/v2.0"
+            self.api_host       = "https://graph.microsoft.com/v1.0"
+        else: 
+            raise NotImplementedError("Provider for todo list widget is not supported yet!")
 
         # self.fetch_token()
         self.fetch_refresh_token()
@@ -74,7 +80,7 @@ class TodoList(object):
             r= requests.get(self.api_host + "/me/todo/lists/{}/tasks".format(lid), headers=headers)
             assert r.status_code == 200
             for _ in r.json()["value"]:
-                tasks.append({
+                info = {
                     "lid": lid, 
                     "lname": lname, 
                     "tid": _["id"], 
@@ -82,14 +88,16 @@ class TodoList(object):
                     "body": _["body"], 
                     "status": _["status"], 
                     "importance": _["importance"], 
-                    "lastModifiedDatetime": _["lastModifiedDatetime"]
-                })
+                    "lastModifiedDateTime": _["lastModifiedDateTime"], 
+                    "completedDateTime": _.get("completedDateTime", "")
+                }
         
         self.tasks = tasks
+        log("\33[0;32;1m", "Success", "Get to do list info.")
         return tasks
 
 
 if __name__ == "__main__":
     f = yaml.load(open("configs/config.yml"))["todo_list"]
-    t = TodoList(f)
+    t = TodoListWidget(f)
     t.get_tasks()

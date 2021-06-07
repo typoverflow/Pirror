@@ -8,7 +8,7 @@ today=datetime.datetime(ut.getYear(),ut.getMonth(),ut.getDay())
 interval = today-begin
 weekcount = interval.days // 7 + 1
 
-class ClassTable(object):
+class ClassTableWidget(object):
     def __init__(self, config):
         self.begin = datetime.strptime(config.get("begin_date"), "%Y-%m-%d")
         self.today = datetime(ut,ut.getYear(), ut.getMonth(), ut.getDay())
