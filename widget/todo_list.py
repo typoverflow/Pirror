@@ -4,9 +4,12 @@ from requests.api import head
 from requests_oauthlib.oauth2_session import OAuth2Session
 import yaml
 import json
-from utils.log import printc, log
 import os
 import time
+
+from utils.log import printc, log
+from ui.gradient import gradientRect
+from ui.multiline import blit_multiline_text
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"]   = "1"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"]    = "1"
@@ -35,7 +38,7 @@ class TodoListWidget(object):
         self.fetch_refresh_token()
 
         self.tasks_info = None
-        self.update_count = 0
+        self.update_count = -1
 
     def fetch_refresh_token(self):
         self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
@@ -95,6 +98,7 @@ class TodoListWidget(object):
                     "lastModifiedDateTime": _["lastModifiedDateTime"], 
                     "completedDateTime": _.get("completedDateTime", "")
                 }
+                tasks.append(info)
         
         log("\33[0;32;1m", "Success", "Get to do list info.")
         self.old_tasks_info = self.tasks_info
@@ -111,8 +115,35 @@ class TodoListWidget(object):
         else:
             return False
 
-    def render(self, screen):
-        pass
+    def render(self, window):
+        anchor_x = 25
+        anchor_y = window.height - 36
+        
+        x = anchor_x
+        y = anchor_y
+
+        # “干点正事吧”标题文字
+        title_surf, title_rect = window.get_font("苹方黑体-细-简").render("Derek，干点正事吧！", (255,255,255), size=24)
+        window.screen.blit(title_surf, (x, y))
+        y -= 14
+
+        # 分割线
+        line = gradientRect((350, 2), (255, 255, 255), (0,0,0))
+        window.screen.blit(line, (x, y))
+        y -= 16
+
+        # 已完成任务列表
+        font = window.get_font("苹方黑体-细-简")
+        starred = ["★ "+t["title"] for t in self.tasks_info if t["status"] == "notStarted" and t["importance"] == "high"]
+        unfinished = ["□ "+t["title"] for t in self.tasks_info if t["status"] == "notStarted" and t["importance"] != "high"]
+        finished = ["×  "+t["title"] for t in self.tasks_info if t["status"] == "completed"]
+        x, y = blit_multiline_text(window.screen, starred, font, 24, (x,y), (255,255,255), down=False)
+        x, y = blit_multiline_text(window.screen, unfinished, font, 24, (x,y), (255,255,255), down=False)
+        font.underline = True
+        font.underline_adjustment = -0.3
+        x, y = blit_multiline_text(window.screen, finished, font, 24, (x,y), (150,150,150), down=False)
+
+
 
 
 if __name__ == "__main__":

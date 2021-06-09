@@ -24,7 +24,7 @@ class WeatherWidget(object):
         self.next24h_info = None
         self.suggestion_info = None
         self.update_cycle = config.get("update_cycle", 60)
-        self.update_count = 0
+        self.update_count = -1
 
     def update_AQI(self):
         r = requests.get(WeatherWidget.AQI_api, params={

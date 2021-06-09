@@ -1,4 +1,4 @@
-VER = "Version: v1.0.0"
+VER = "v1.0.0"
 import pygame
 import sys
 import random
@@ -28,25 +28,23 @@ class Window(object):
         else:
             self.background = io.imread(background_path)
             self.background = transform.resize(self.background, (self.height, self.width), anti_aliasing=True)
-        self.background_time_area = self.background[0:400, 0:450 , :]
+        self.background_time_area = self.background[0:400, 0:170 , :]
         
         self.background = pygame.surfarray.make_surface(self.background)
         self.background_time_area = pygame.surfarray.make_surface(self.background_time_area)
 
-        # self.fonts = {}
-        # for file in os.listdir("./resources/Fonts"):
-        #     if file.endswith(".ttf"):
-        #         self.fonts[file] = pygame.freetype.Font(os.path.join("./resources/Fonts", file))
-        #     else:
-        #         raise NotImplementedError("Font type is not supported yet.")
+        self.fonts = dict()
+        for font in os.listdir("./resources/Fonts"):
+            path = os.path.join("./resources/Fonts", font)
+            self.fonts[font.split(".")[0]] = pygame.freetype.Font(path)
 
         self.screen = pygame.display.set_mode(size=(self.width, self.height))
         pygame.display.set_caption("Pirror")
         pygame.mouse.set_visible(False)
         self.clock = pygame.time.Clock()
 
-    def get_font(self, type, size):
-        return pygame.freetype.Font(os.path.join("./resources/Fonts", type), size)
+    def get_font(self, font):
+        return self.fonts.get(font)
 
 
 def initialize_widgets(global_config):
@@ -73,10 +71,18 @@ def trigger_update_and_render(widgets, screen):
         widget.render(screen)
 
 def show_time(window):
-    font = pygame.freetype.Font("./resources/Fonts/苹方黑体-纤细-简.ttf", 116)
+    font = window.get_font("sarasa-mono-cl-regular")
 
     time_string = ut.getTimeString()
-    font.render_to(window.screen, (40, 60), time_string, (255,255,255))
+    time_surf, time_rect = font.render(time_string, (255,255,255), size=128)
+    window.screen.blit(time_surf, (60, 80))
+
+def show_version(window):
+    font = window.get_font("sarasa-mono-cl-italic")
+
+    ver_string = "Powered by Pirror {}".format(VER)
+    ver_surf, ver_rect = font.render(ver_string, (255,255,255), size=18)
+    window.screen.blit(ver_surf, (window.width-10*len(ver_string), window.height-22))
 
 
 
@@ -100,20 +106,22 @@ if __name__ == "__main__":
                     pygame.quit()
                     sys.exit()
         # 低频组件的update和渲染
-        if ut.getSec() == 0:
-            updated = False
+        # if ut.getSec() == 0:
+        updated = False
+        for widget in widgets:
+            updated = widget.update_all() or updated
+        if updated:
+            window.screen.blit(window.background, (0, 0))
             for widget in widgets:
-                updated = widget.update_all() or updated
-            if updated:
-                window.screen.blit(window.background, (0, 0))
-                for widget in widgets:
-                    widget.render(window)
+                widget.render(window)
         
         window.screen.blit(window.background_time_area, (0, 0))
         show_time(window)
+        show_version(window)
         window.clock.tick(window.fps)
 
         pygame.display.update()
+        time.sleep(1000000000)
             
 
 

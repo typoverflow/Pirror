@@ -12,7 +12,7 @@ class SentenceWidget(object):
 
         self.sentence_info = None
         self.update_cycle = config.get("update_cycle", 30)
-        self.update_count = 0
+        self.update_count = -1
 
     def update_sentence(self):
         r = requests.get("{}?{}&max_length={}".format(self.host, self.type_query_str, self.max_length))
