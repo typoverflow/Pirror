@@ -33,6 +33,9 @@ class TodoListWidget(object):
         # self.fetch_token()
         self.fetch_refresh_token()
 
+        self.tasks_info = None
+        self.update_count = 0
+
     def fetch_refresh_token(self):
         self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
         authorization_url, _ = self.oauth.authorization_url(self.auth_host + "/authorize")
@@ -65,7 +68,7 @@ class TodoListWidget(object):
         return self.access_token
         
 
-    def get_tasks(self):
+    def update_tasks(self):
         token = self.get_token()
         headers = {
             "Authorization": "Bearer {}".format(token)
@@ -92,9 +95,18 @@ class TodoListWidget(object):
                     "completedDateTime": _.get("completedDateTime", "")
                 }
         
-        self.tasks = tasks
         log("\33[0;32;1m", "Success", "Get to do list info.")
-        return tasks
+        self.old_tasks_info = self.tasks_info
+        self.tasks_info = tasks
+
+        return self.old_tasks_info != self.tasks_info
+
+    def update_all(self, cycle):
+        self.update_count += 1
+        if self.update_count % cycle == 0:
+            self.update_count = 0
+            updated1 = self.update_tasks()
+            return updated1
 
 
 if __name__ == "__main__":

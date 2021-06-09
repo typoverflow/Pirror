@@ -10,13 +10,26 @@ class SentenceWidget(object):
         self.max_length = config.get("max_length", 15)
         self.host = "https://v1.hitokoto.cn"
 
-    def get_sentence(self):
+        self.sentence_info = None
+        self.update_count = 0
+
+    def update_sentence(self):
         r = requests.get("{}?{}&max_length={}".format(self.host, self.type_query_str, self.max_length))
         assert r.status_code == 200
         result = r.json()
 
         log("\33[0;32;1m", "Success", "Get sentence from hitokoto")
-        return [result["hitokoto"], result["from"]]
+        self.old_sentence_info = self.sentence_info
+        self.sentence_info = [result["hitokoto"], result["from"]]
+
+        return self.old_sentence_info != self.sentence_info
+
+    def update_all(self, cycle):
+        self.update_count += 1
+        if self.update_count % cycle == 0:
+            self.update_count = 0
+            updated1 = self.update_sentence()
+            return updated1
 
 if __name__ == "__main__":
     f = open("configs/config.yml")
