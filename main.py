@@ -5,17 +5,49 @@ import random
 import os
 import time, datetime
 import yaml
+from PIL import Image
+from skimage import io, transform
+import numpy as np
 
 import pygame
+import pygame.freetype
 from pygame.locals import *
 
 from widget import weather, todo_list, class_table, sentence, date
 import utils.time as ut
 
-class ScreenConfig(object):
+class Window(object):
+    def __init__(self, config):
         self.fps = config.get("FPS", 30)
-        self.width = config.get("width", 1080)
-        self.height = config.get("height", 1920)
+        self.width = config.get("width", 900)
+        self.height = config.get("height", 1600)
+
+        background_path = config.get("background", None)
+        if background_path is None:
+            self.background = np.zeros((self.height, self.width, 3))
+        else:
+            self.background = io.imread(background_path)
+            self.background = transform.resize(self.background, (self.height, self.width), anti_aliasing=True)
+        self.background_time_area = self.background[0:400, 0:450 , :]
+        
+        self.background = pygame.surfarray.make_surface(self.background)
+        self.background_time_area = pygame.surfarray.make_surface(self.background_time_area)
+
+        # self.fonts = {}
+        # for file in os.listdir("./resources/Fonts"):
+        #     if file.endswith(".ttf"):
+        #         self.fonts[file] = pygame.freetype.Font(os.path.join("./resources/Fonts", file))
+        #     else:
+        #         raise NotImplementedError("Font type is not supported yet.")
+
+        self.screen = pygame.display.set_mode(size=(self.width, self.height))
+        pygame.display.set_caption("Pirror")
+        pygame.mouse.set_visible(False)
+        self.clock = pygame.time.Clock()
+
+    def get_font(self, type, size):
+        return pygame.freetype.Font(os.path.join("./resources/Fonts", type), size)
+
 
 def initialize_widgets(global_config):
     ret = []
@@ -40,25 +72,23 @@ def trigger_update_and_render(widgets, screen):
         widget.update_all()
         widget.render(screen)
 
-def show_time(screen):
-    pass
+def show_time(window):
+    font = pygame.freetype.Font("./resources/Fonts/苹方黑体-纤细-简.ttf", 116)
+
+    time_string = ut.getTimeString()
+    font.render_to(window.screen, (40, 60), time_string, (255,255,255))
 
 
 
 if __name__ == "__main__":
+    pygame.init()
+
     # 加载全局配置
     with open("configs/config.yml", "r") as fp:
         global_config = yaml.load(fp, yaml.SafeLoader)
 
-    # 生成屏幕配置
-    screen_config = ScreenConfig(global_config.get("screen", {}))
-
-    #初始化pygame对象
-    pygame.init()
-    screen = pygame.display.set_mode(size=(screen_config.width, screen_config.height))
-    pygame.display.set_caption("Pirror")
-    pygame.mouse.set_visible(False)
-    clock = pygame.time.Clock()
+    # 生成屏幕
+    window = Window(global_config.get("window", {}))
 
     # 生成widget
     widgets = initialize_widgets(global_config)
@@ -75,13 +105,13 @@ if __name__ == "__main__":
             for widget in widgets:
                 updated = widget.update_all() or updated
             if updated:
-                screen.blit(background, (0, 0))
+                window.screen.blit(window.background, (0, 0))
                 for widget in widgets:
-                    widget.render(screen)
+                    widget.render(window)
         
-        screen.blit(background_time_area, (0, 0))
-        show_time(screen)
-        clock.tick(screen_config.fps)
+        window.screen.blit(window.background_time_area, (0, 0))
+        show_time(window)
+        window.clock.tick(window.fps)
 
         pygame.display.update()
             
