@@ -1,5 +1,7 @@
-pygame==1.9.6
-requests
-pillow
-MyQR
-scikit-image
+sxtwl==1.1.0
+pygame==2.0.1
+requests==2.24.0
+pandas==1.1.3
+oauthlib==3.1.1
+requests_oauthlib==1.3.0
+PyYAML==5.4.1

@@ -22,7 +22,7 @@ class ClassTableWidget(object):
         self.old_class_info = self.class_info
         if self.table == []:
             self.class_info = "无课程"
-        if ut.1() >= len(self.table):
+        if ut.getWday() >= len(self.table):
             self.class_info = "无课程"
         else:
             classes = self.table[ut.getWday()]
