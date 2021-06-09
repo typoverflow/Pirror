@@ -17,6 +17,7 @@ class TodoListWidget(object):
         self.provider = config.get("provider", {})
         if self.provider == {}:
             raise ValueError("To do list provider not set!")
+        self.update_cycle = config.get("update_cycle", 30)
 
         config = config.get(self.provider, {})
 
@@ -101,12 +102,17 @@ class TodoListWidget(object):
 
         return self.old_tasks_info != self.tasks_info
 
-    def update_all(self, cycle):
+    def update_all(self):
         self.update_count += 1
-        if self.update_count % cycle == 0:
+        if self.update_count % self.update_cycle == 0:
             self.update_count = 0
             updated1 = self.update_tasks()
             return updated1
+        else:
+            return False
+
+    def render(self, screen):
+        pass
 
 
 if __name__ == "__main__":

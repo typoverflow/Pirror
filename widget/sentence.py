@@ -11,6 +11,7 @@ class SentenceWidget(object):
         self.host = "https://v1.hitokoto.cn"
 
         self.sentence_info = None
+        self.update_cycle = config.get("update_cycle", 30)
         self.update_count = 0
 
     def update_sentence(self):
@@ -24,12 +25,17 @@ class SentenceWidget(object):
 
         return self.old_sentence_info != self.sentence_info
 
-    def update_all(self, cycle):
+    def update_all(self):
         self.update_count += 1
-        if self.update_count % cycle == 0:
+        if self.update_count % self.update_cycle == 0:
             self.update_count = 0
             updated1 = self.update_sentence()
             return updated1
+        else:
+            return False
+
+    def render(self, screen):
+        pass
 
 if __name__ == "__main__":
     f = open("configs/config.yml")

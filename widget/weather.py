@@ -23,6 +23,7 @@ class WeatherWidget(object):
         self.realtime_info = None
         self.next24h_info = None
         self.suggestion_info = None
+        self.update_cycle = config.get("update_cycle", 60)
         self.update_count = 0
 
     def update_AQI(self):
@@ -102,15 +103,20 @@ class WeatherWidget(object):
         self.icon_buffer[entry] = pygame.image.load(entry)
         return self.icon_buffer[entry]
 
-    def update_all(self, cycle):
+    def update_all(self):
         self.update_count += 1
-        if self.update_count % cycle == 0:
+        if self.update_count % self.update_cycle == 0:
             self.update_count = 0
             updated1 = self.update_AQI()
             updated2 = self.update_next24h_weather()
             updated3 = self.update_realtime_weather()
             updated4 = self.update_suggestion()
             return updated1 or updated2 or updated3 or updated4
+        else:
+            return False
+    
+    def render(self, screen):
+        pass
     
 
         
