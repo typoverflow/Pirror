@@ -1,9 +1,13 @@
+import datetime
+from numpy.lib.shape_base import vsplit
 import requests
 import pandas
 import yaml
 import json
 import pygame
 from utils.log import log
+from ui.gradient import gradientRect
+from ui.text import blit_text_in_middle
 
 class WeatherWidget(object):
     locationID_list = pandas.read_csv("resources/locationID.csv")
@@ -23,8 +27,8 @@ class WeatherWidget(object):
         self.realtime_info = None
         self.next24h_info = None
         self.suggestion_info = None
-        self.update_cycle = config.get("update_cycle", 60)
-        self.update_count = -1
+        self.update_cycle = config.get("update_cycle", 60)*60
+        self.last_update = 0
 
     def update_AQI(self):
         r = requests.get(WeatherWidget.AQI_api, params={
@@ -96,17 +100,16 @@ class WeatherWidget(object):
         }
         return self.old_suggestion_info != self.suggestion_info
 
-    def get_icon(self, code, size):
-        entry = "./resources/WeatherIcon/color-{}/{}.png".format(code, size)
+    def get_icon(self, code, size, mode="color"):
+        entry = "./resources/WeatherIcon/{}-{}/{}.png".format(mode, size, code)
         if entry in self.icon_buffer:
             return self.icon_buffer.get(entry)
         self.icon_buffer[entry] = pygame.image.load(entry)
         return self.icon_buffer[entry]
 
-    def update_all(self):
-        self.update_count += 1
-        if self.update_count % self.update_cycle == 0:
-            self.update_count = 0
+    def update_all(self, now):
+        if now - self.last_update >= self.update_cycle:
+            self.last_update = now
             updated1 = self.update_AQI()
             updated2 = self.update_next24h_weather()
             updated3 = self.update_realtime_weather()
@@ -115,8 +118,75 @@ class WeatherWidget(object):
         else:
             return False
     
-    def render(self, screen):
-        pass
+    def render(self, window):
+        anchor_x = 550
+        anchor_y = 120
+        x, y = anchor_x, anchor_y
+        temp_font = window.get_font("NotoSansDisplay-Thin")
+        text_font = window.get_font("苹方黑体-细-简")
+
+        # 温度数值
+        temp_surf, temp_rect = temp_font.render(self.realtime_info["temp"]+"°", (255,255,255), size=100)
+        window.screen.blit(temp_surf, (x,y))
+        x1, y1 = x+temp_rect.width+5, y+temp_rect.height+15
+
+        # 天气描述
+        descrip = self.realtime_info["text"] + "转" + self.next24h_info[0]["text"]
+        descrip_surf, descrip_rect = text_font.render(descrip, (255,255,255), size=24)
+        window.screen.blit(descrip_surf, (x, y1))
+
+        # icons
+        main_icon = self.get_icon(self.realtime_info["icon"], 256)
+        small_icon1 = self.get_icon(self.next24h_info[0]["icon"], 64)
+        small_icon2 = self.get_icon(self.next24h_info[1]["icon"], 64)
+        main_icon = pygame.transform.scale(main_icon, (156,156))
+
+        window.screen.blit(main_icon, (x1, y-20))
+        x2 = x1+main_icon.get_rect().width-15
+        window.screen.blit(small_icon1, (x2, y-3))
+        y2 = y+small_icon1.get_rect().height
+        window.screen.blit(small_icon2, (x2,y2))
+
+        # 分割线
+        y = y1+ descrip_rect.height + 20
+        line = gradientRect((window.width-x, 2), (0,0,0), (255,255,255))
+        window.screen.blit(line, (x, y))
+        y += line.get_rect().height+5
+
+        x += 10
+        x_, y_ = (window.width+x)/2, y+56+10
+        # 生活指数
+        uv_icon         = pygame.image.load("./resources/Icon/UV_icon.png")
+        uv_icon         = pygame.transform.scale(uv_icon, (56,56))
+        hum_icon        = pygame.image.load("./resources/Icon/hum_icon.png")
+        hum_icon        = pygame.transform.scale(hum_icon, (56,56))
+        pressure_icon   = pygame.image.load("./resources/Icon/pressure_icon.png")
+        pressure_icon   = pygame.transform.scale(pressure_icon, (56,56))
+        AQI_icon        = pygame.image.load("./resources/Icon/AQI_icon.png")
+        AQI_icon        = pygame.transform.scale(AQI_icon, (56,56))
+
+        window.screen.blit(uv_icon, (x,y))
+        window.screen.blit(AQI_icon, (x_, y))
+        window.screen.blit(hum_icon, (x, y_))
+        window.screen.blit(pressure_icon, (x_, y_))
+
+        font = window.get_font("苹方黑体-准-简")
+
+        blit_text_in_middle(window.screen, self.suggestion_info["UV指数"], font, 24, window.width, y+30, (255,255,255), (x+64, x_-10))
+        blit_text_in_middle(window.screen, " ".join(self.AQI_info), font, 24, window.width, y+30, (255,255,255), (x_+64, window.width))
+        blit_text_in_middle(window.screen, self.realtime_info["humidity"]+"%", font, 24, window.width, y_+30, (255,255,255), (x+64, x_-10))
+        blit_text_in_middle(window.screen, self.realtime_info["pressure"]+"KPa", font, 24, window.width, y_+30, (255,255,255), (x_+64, window.width))
+        # font.render_to(window.screen, (x+100, y+20), self.suggestion_info["UV指数"], (255,255,255), size=30)
+        # font.render_to(window.screen, (x_+100, y+20), " ".join(self.AQI_info), (255,255,255), size=24)
+        # font.render_to(window.screen, (x+100, y_+20), self.realtime_info["humidity"]+"%", (255,255,255), size=30)
+        # font.render_to(window.screen, (x_+100, y_+20), self.realtime_info["pressure"]+"KPa", (255,255,255), size=30)
+        # font.render_to(window.screen, (x+64, y+30), "UV指数", (180,180,180), size=20)
+
+
+
+
+
+
     
 
         

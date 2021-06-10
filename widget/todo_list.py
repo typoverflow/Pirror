@@ -6,10 +6,11 @@ import yaml
 import json
 import os
 import time
+import datetime
 
 from utils.log import printc, log
 from ui.gradient import gradientRect
-from ui.multiline import blit_multiline_text
+from ui.text import blit_multiline_text
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"]   = "1"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"]    = "1"
@@ -20,7 +21,7 @@ class TodoListWidget(object):
         self.provider = config.get("provider", {})
         if self.provider == {}:
             raise ValueError("To do list provider not set!")
-        self.update_cycle = config.get("update_cycle", 30)
+        self.update_cycle = config.get("update_cycle", 30)*60
 
         config = config.get(self.provider, {})
 
@@ -38,7 +39,7 @@ class TodoListWidget(object):
         self.fetch_refresh_token()
 
         self.tasks_info = None
-        self.update_count = -1
+        self.last_update = 0
 
     def fetch_refresh_token(self):
         self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
@@ -66,7 +67,7 @@ class TodoListWidget(object):
             new_tokens = self.oauth.refresh_token(self.auth_host + "/token", self.refresh_token, client_id=self.client_id, client_secret=self.client_secret)
             self.refresh_token      = new_tokens["refresh_token"]
             self.access_token       = new_tokens["access_token"]
-            self.token_expire_time  = new_tokens["expries_in"] - 600
+            self.token_expire_time  = new_tokens["expires_in"] - 600
             self.token_create_time  = time.time()
 
         return self.access_token
@@ -106,10 +107,9 @@ class TodoListWidget(object):
 
         return self.old_tasks_info != self.tasks_info
 
-    def update_all(self):
-        self.update_count += 1
-        if self.update_count % self.update_cycle == 0:
-            self.update_count = 0
+    def update_all(self, now):
+        if now - self.last_update >= self.update_cycle:
+            self.last_update = now
             updated1 = self.update_tasks()
             return updated1
         else:
@@ -136,12 +136,15 @@ class TodoListWidget(object):
         font = window.get_font("苹方黑体-细-简")
         starred = ["★ "+t["title"] for t in self.tasks_info if t["status"] == "notStarted" and t["importance"] == "high"]
         unfinished = ["□ "+t["title"] for t in self.tasks_info if t["status"] == "notStarted" and t["importance"] != "high"]
-        finished = ["×  "+t["title"] for t in self.tasks_info if t["status"] == "completed"]
+        finished = [["×  "+t["title"], t["completedDateTime"]["dateTime"], t["completedDateTime"]["timeZone"]] for t in self.tasks_info if t["status"] == "completed"]
+        finished = list(filter(lambda x: (datetime.datetime.today()-datetime.datetime.strptime(x[1].split("T")[0]+"T"+x[2], "%Y-%m-%dT%Z")).days <= 4, finished))
+        finished = [t[0] for t in finished]
         x, y = blit_multiline_text(window.screen, starred, font, 24, (x,y), (255,255,255), down=False)
         x, y = blit_multiline_text(window.screen, unfinished, font, 24, (x,y), (255,255,255), down=False)
         font.underline = True
         font.underline_adjustment = -0.3
         x, y = blit_multiline_text(window.screen, finished, font, 24, (x,y), (150,150,150), down=False)
+        font.underline = False
 
 
 

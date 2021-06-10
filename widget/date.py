@@ -2,6 +2,7 @@ from utils.log import log
 import time
 from utils.time import *
 import sxtwl
+import datetime
 
 class DateWidget(object):
     YMC = [u"十一", u"十二", u"正", u"二", u"三", u"四", u"五", u"六", u"七", u"八", u"九", u"十" ]
@@ -15,8 +16,8 @@ class DateWidget(object):
         self.lunar_info = None
         self.lunar = sxtwl.Lunar()
 
-        self.update_cycle = config.get("update_cycle", 1440)
-        self.update_count = -1
+        self.update_cycle = config.get("update_cycle", 1440)*60
+        self.last_update = 0
 
     
     def update_date_info(self):
@@ -44,10 +45,9 @@ class DateWidget(object):
 
         return self.old_lunar_info != self.lunar_info
     
-    def update_all(self):
-        self.update_count += 1
-        if self.update_count % self.update_cycle == 0:
-            self.update_count = 0
+    def update_all(self, now):
+        if  now - self.last_update >= self.update_cycle:
+            self.last_update = now
             updated1 = self.update_date_info()
             updated2 = self.update_lunar_info()
             return updated1 or updated2

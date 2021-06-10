@@ -1,27 +1,27 @@
 import os
-from datetime import date, datetime
+import datetime
 import time
 from utils import time as ut
 import yaml
 import pygame
 
 from ui.gradient import gradientRect
-from ui.multiline import blit_multiline_text
+from ui.text import blit_multiline_text
 
 
 class ClassTableWidget(object):
     def __init__(self, config):
-        self.begin = datetime.strptime(config.get("begin_date"), "%Y-%m-%d")
+        self.begin = datetime.datetime.strptime(config.get("begin_date"), "%Y-%m-%d")
 
         self.table = config.get("table", [])
         self.table = [[] if v is None else v for (k,v) in self.table.items()]
 
         self.class_info = None
-        self.update_cycle = config.get("update_cycle", 1440)
-        self.update_count = -1
+        self.update_cycle = config.get("update_cycle", 1440) * 60
+        self.last_update =0
 
     def update_class(self):
-        today = datetime(ut.getYear(), ut.getMonth(), ut.getDay())
+        today = datetime.datetime(ut.getYear(), ut.getMonth(), ut.getDay())
         interval = today - self.begin
         weekcount = interval.days // 7 + 1
         self.old_class_info = self.class_info
@@ -39,10 +39,9 @@ class ClassTableWidget(object):
 
         return self.old_class_info != self.class_info
 
-    def update_all(self):
-        self.update_count += 1
-        if self.update_count % self.update_cycle == 0:
-            self.update_count = 0
+    def update_all(self, now):
+        if now-self.last_update >= self.update_cycle:
+            self.last_update = now
             updated1 = self.update_class()
             return updated1
         else:

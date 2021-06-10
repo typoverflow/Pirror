@@ -1,3 +1,4 @@
+import datetime
 def printc(color, *texts, **kargs):
     print(color, end="")
     if "sep" in kargs:
@@ -10,4 +11,4 @@ def printc(color, *texts, **kargs):
         print("\033[0m")
 
 def log(color, prompt, text):
-    print(color+"【{}】 ".format(prompt)+"\033[0m"+text)
+    print(color+"【{}】({}): ".format(prompt, datetime.datetime.strftime(datetime.datetime.now(), "%m-%d %H:%M:%S"))+"\033[0m"+text)

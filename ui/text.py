@@ -21,13 +21,29 @@ def blit_multiline_text(screen, text, font, size, pos, color, down=True, linehei
     else:
         return x, y+__.height
 
+def blit_text_in_middle(screen, text, font, size, width, y, color, x_range=None):
+    # en_width = font.render("测", color, size=size)[1].width
+    # zh_width = font.render("t", color, size=size)[1].width
+    if x_range:
+        x_left, x_right = x_range
+    else:
+        x_left, x_right = (0, width)
+    text_surf, text_rect = font.render(text, color, size=size)
+    text_rect.center = ((x_left+x_right)/2, y)
+    screen.blit(text_surf, text_rect)
+
+    return width, y+text_rect.height+10
+    
+
+
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((920, 920))
     font = freetype.Font("./resources/Fonts/苹方黑体-中粗-简.ttf")
-    font.underline_adjustment = -0.3
-    font.underline = True
-    x,y=blit_multiline_text(screen, ["☒☑☐", "完成了"], font, 24, (10, 200), (255,255,255), down=False)
+    # font.underline_adjustment = -0.3
+    # font.underline = True
+    # x,y=blit_multiline_text(screen, ["「」「」是不是", "....,,，，。。是不是是不是"], font, 24, (10, 200), (255,255,255), down=False)
+    blit_text_in_middle(screen, "「艰难困苦，玉汝于成。」", font, 24, 920, 460, (255,255,255))
     # font.render_to(screen, (x,y),"使\u0336得\u0336", (255,255,255), size=24)
     pygame.display.update()
     time.sleep(1000000)

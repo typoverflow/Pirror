@@ -24,11 +24,11 @@ class Window(object):
 
         background_path = config.get("background", None)
         if background_path is None:
-            self.background = np.zeros((self.height, self.width, 3))
+            self.background = np.zeros((self.width, self.height, 3))
         else:
             self.background = io.imread(background_path)
             self.background = transform.resize(self.background, (self.height, self.width), anti_aliasing=True)
-        self.background_time_area = self.background[0:400, 0:170 , :]
+        self.background_time_area = self.background[0:400, 0:180 , :]
         
         self.background = pygame.surfarray.make_surface(self.background)
         self.background_time_area = pygame.surfarray.make_surface(self.background_time_area)
@@ -106,10 +106,10 @@ if __name__ == "__main__":
                     pygame.quit()
                     sys.exit()
         # 低频组件的update和渲染
-        # if ut.getSec() == 0:
+        now = time.time()
         updated = False
         for widget in widgets:
-            updated = widget.update_all() or updated
+            updated = widget.update_all(now) or updated
         if updated:
             window.screen.blit(window.background, (0, 0))
             for widget in widgets:
@@ -118,10 +118,11 @@ if __name__ == "__main__":
         window.screen.blit(window.background_time_area, (0, 0))
         show_time(window)
         show_version(window)
-        window.clock.tick(window.fps)
+        # window.clock.tick(window.fps)
+        pygame.time.delay(1000)
 
         pygame.display.update()
-        time.sleep(1000000000)
+        # time.sleep(1000000000)
             
 
 
