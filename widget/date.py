@@ -1,8 +1,6 @@
-from utils.log import log
 import time
 from utils.time import *
 import sxtwl
-import datetime
 
 class DateWidget(object):
     YMC = [u"十一", u"十二", u"正", u"二", u"三", u"四", u"五", u"六", u"七", u"八", u"九", u"十" ]
@@ -70,7 +68,6 @@ class DateWidget(object):
 
 if __name__ == "__main__":
     c = DateWidget()
-    # c.update_time_info()
     c.update_date_info()
     c.update_lunar_info()
     print(c.date_info, c.lunar_info)

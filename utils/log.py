@@ -1,4 +1,5 @@
 import datetime
+
 def printc(color, *texts, **kargs):
     print(color, end="")
     if "sep" in kargs:

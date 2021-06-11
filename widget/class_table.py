@@ -1,6 +1,4 @@
-import os
 import datetime
-import time
 from utils import time as ut
 import yaml
 import pygame
@@ -86,7 +84,7 @@ class ClassTableWidget(object):
         if self.class_info == "无课程":
             class_string = "今日不播"
             text_surf, text_rect = font2.render(class_string, (255,255,255), size=24)
-            window.screen.blit(text_surf, (x, y))
+            window.screen.blit(text_surf, (x, y+12))
         else:
             classes = [c["name"] for c in self.class_info]
             rooms = [c["room"] for c in self.class_info]

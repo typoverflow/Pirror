@@ -1,10 +1,9 @@
-import datetime
-from numpy.lib.shape_base import vsplit
 import requests
 import pandas
 import yaml
 import json
 import pygame
+
 from utils.log import log
 from ui.gradient import gradientRect
 from ui.text import blit_text_in_middle
@@ -45,7 +44,7 @@ class WeatherWidget(object):
             self.AQI_info =  [result["station"][0]["aqi"], result["station"][0]["category"]]
             return self.old_AQI_info != self.AQI_info
         for s in result["station"]:
-            if s["name"] == self.AQI_station:
+            if s["name"] in self.AQI_station:
                 self.old_AQI_info = self.AQI_info
                 self.AQI_info = [s["aqi"], s["category"]]
                 return self.old_AQI_info != self.AQI_info
@@ -178,18 +177,6 @@ class WeatherWidget(object):
         blit_text_in_middle(window.screen, self.realtime_info["pressure"]+"KPa", font, 24, window.width, y_+30, (255,255,255), (x_+64, window.width))
         # font.render_to(window.screen, (x+100, y+20), self.suggestion_info["UV指数"], (255,255,255), size=30)
         # font.render_to(window.screen, (x_+100, y+20), " ".join(self.AQI_info), (255,255,255), size=24)
-        # font.render_to(window.screen, (x+100, y_+20), self.realtime_info["humidity"]+"%", (255,255,255), size=30)
-        # font.render_to(window.screen, (x_+100, y_+20), self.realtime_info["pressure"]+"KPa", (255,255,255), size=30)
-        # font.render_to(window.screen, (x+64, y+30), "UV指数", (180,180,180), size=20)
-
-
-
-
-
-
-    
-
-        
 
 if __name__ == "__main__":
     f = open("configs/config.yml")

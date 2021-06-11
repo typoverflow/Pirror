@@ -1,14 +1,11 @@
-from oauthlib.oauth2.rfc6749 import tokens
 import requests
-from requests.api import head
 from requests_oauthlib.oauth2_session import OAuth2Session
 import yaml
-import json
 import os
 import time
 import datetime
 
-from utils.log import printc, log
+from utils.log import log
 from ui.gradient import gradientRect
 from ui.text import blit_multiline_text
 
@@ -145,8 +142,6 @@ class TodoListWidget(object):
         font.underline_adjustment = -0.3
         x, y = blit_multiline_text(window.screen, finished, font, 24, (x,y), (150,150,150), down=False)
         font.underline = False
-
-
 
 
 if __name__ == "__main__":

@@ -1,9 +1,9 @@
 import yaml
 import requests
+import time
+
 from utils.log import log
 from ui.text import blit_text_in_middle
-import time
-import datetime
 
 class SentenceWidget(object):
     def __init__(self, config):
@@ -52,8 +52,6 @@ class SentenceWidget(object):
 
         _, y = blit_text_in_middle(window.screen, quote, font, 24, window.width, y, (180,180,180))
 
-
-        
 
 if __name__ == "__main__":
     f = open("configs/config.yml")

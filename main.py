@@ -1,11 +1,10 @@
 VER = "v1.0.0"
+
 import pygame
 import sys
-import random
 import os
-import time, datetime
+import time
 import yaml
-from PIL import Image
 from skimage import io, transform
 import numpy as np
 
@@ -13,7 +12,7 @@ import pygame
 import pygame.freetype
 from pygame.locals import *
 
-from widget import weather, todo_list, class_table, sentence, date
+import widget
 import utils.time as ut
 
 class Window(object):
@@ -40,7 +39,7 @@ class Window(object):
 
         self.screen = pygame.display.set_mode(size=(self.width, self.height))
         pygame.display.set_caption("Pirror")
-        pygame.mouse.set_visible(False)
+        # pygame.mouse.set_visible(False)
         self.clock = pygame.time.Clock()
 
     def get_font(self, font):
@@ -52,15 +51,15 @@ def initialize_widgets(global_config):
     widgets = [k for (k, v) in global_config.get("widgets", {}).items() if v==True]
     for w in widgets:
         if w == "class_table":
-            ret.append(class_table.ClassTableWidget(global_config.get("class_table")))
+            ret.append(widget.ClassTableWidget(global_config.get("class_table")))
         elif w == "weather":
-            ret.append(weather.WeatherWidget(global_config.get("weather")))
+            ret.append(widget.WeatherWidget(global_config.get("weather")))
         elif w == "todo_list":
-            ret.append(todo_list.TodoListWidget(global_config.get("todo_list")))
+            ret.append(widget.TodoListWidget(global_config.get("todo_list")))
         elif w == "sentence":
-            ret.append(sentence.SentenceWidget(global_config.get("sentence")))
+            ret.append(widget.SentenceWidget(global_config.get("sentence")))
         elif w == "date":
-            ret.append(date.DateWidget(global_config.get("date")))
+            ret.append(widget.DateWidget(global_config.get("date")))
         else:
             raise NotImplementedError("Widget {} has not been implemented yet".format(w))
     return ret
@@ -119,9 +118,8 @@ if __name__ == "__main__":
         show_time(window)
         show_version(window)
         # window.clock.tick(window.fps)
-        pygame.time.delay(1000)
-
         pygame.display.update()
+        pygame.time.delay(30000)
         # time.sleep(1000000000)
             
 
