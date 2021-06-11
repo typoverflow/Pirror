@@ -175,9 +175,9 @@ class WeatherWidget(object):
         font = window.get_font("苹方黑体-准-简")
 
         blit_text_in_middle(window.screen, self.suggestion_info["UV指数"], font, 24, window.width, y+30, (255,255,255), (x+64, x_-10))
-        blit_text_in_middle(window.screen, " ".join(self.AQI_info), font, 24, window.width, y+30, (255,255,255), (x_+64, window.width))
+        blit_text_in_middle(window.screen, AQI_icon[1], font, 24, window.width, y+30, (255,255,255), (x_+64, window.width))
         blit_text_in_middle(window.screen, self.realtime_info["humidity"]+"%", font, 24, window.width, y_+30, (255,255,255), (x+64, x_-10))
-        blit_text_in_middle(window.screen, self.realtime_info["pressure"]+"KPa", font, 24, window.width, y_+30, (255,255,255), (x_+64, window.width))
+        blit_text_in_middle(window.screen, self.realtime_info["pressure"]+"Pa", font, 24, window.width, y_+30, (255,255,255), (x_+64, window.width))
 
 
 if __name__ == "__main__":
