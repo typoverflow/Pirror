@@ -42,9 +42,8 @@ class TodoListWidget(object):
         self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
         authorization_url, _ = self.oauth.authorization_url(self.auth_host + "/authorize")
 
-        log("\n\033[0;33;1m", "Authorize", "在浏览器中打开下面的URL，并在授权后将重定向的URL复制粘贴进入终端内")
+        log("\n\033[0;33;1m", "Authorize", "ToDoListWidget - 在浏览器中打开下面的URL，并在授权后将重定向的URL复制粘贴进入终端内")
         print(authorization_url)
-        # code = input("重定向的URL为:\n").split("?")[1].split("&")[0].split("=")[1]
         res_url = input("重定向的URL为:\n")
 
         tokens = self.oauth.fetch_token(self.auth_host + "/token", 
@@ -57,6 +56,7 @@ class TodoListWidget(object):
         self.access_token       = tokens["access_token"]
         self.token_expire_time  = tokens["expires_in"] - 600
         self.token_create_time  = time.time()
+        log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do API authorized. ")
 
     def get_token(self):
         # check expiration
@@ -66,6 +66,7 @@ class TodoListWidget(object):
             self.access_token       = new_tokens["access_token"]
             self.token_expire_time  = new_tokens["expires_in"] - 600
             self.token_create_time  = time.time()
+            log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do access token refreshed successfully.")
 
         return self.access_token
         
@@ -98,10 +99,10 @@ class TodoListWidget(object):
                 }
                 tasks.append(info)
         
-        log("\33[0;32;1m", "Success", "Get to do list info.")
         self.old_tasks_info = self.tasks_info
         self.tasks_info = tasks
 
+        log("\33[0;32;1m", "Request", "ToDoListWidget - get tasks info successfully.")
         return self.old_tasks_info != self.tasks_info
 
     def update_all(self, now):

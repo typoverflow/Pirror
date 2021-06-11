@@ -14,6 +14,7 @@ from pygame.locals import *
 
 import widget
 import utils.time as ut
+from utils.log import log
 
 class Window(object):
     def __init__(self, config):
@@ -95,16 +96,18 @@ if __name__ == "__main__":
     # 生成屏幕
     window = Window(global_config.get("window", {}))
 
-    # 生成widget
+    # 生成widgets
     widgets = initialize_widgets(global_config)
 
     while 1:
+        # handle pygame events
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-        # 低频组件的update和渲染
+
+        # updates and rendering for widgets
         now = time.time()
         updated = False
         for widget in widgets:
@@ -113,7 +116,9 @@ if __name__ == "__main__":
             window.screen.blit(window.background, (0, 0))
             for widget in widgets:
                 widget.render(window)
+            log("\33[0;34;1m", "Render", "Screen - Re-rendering the whole screen.")
         
+        # blit time and version info to screen
         window.screen.blit(window.background_time_area, (0, 0))
         show_time(window)
         show_version(window)
@@ -121,13 +126,3 @@ if __name__ == "__main__":
         pygame.display.update()
         pygame.time.delay(30000)
         # time.sleep(1000000000)
-            
-
-
-
-
-
-
-
-    
-    

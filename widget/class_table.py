@@ -3,6 +3,7 @@ from utils import time as ut
 import yaml
 import pygame
 
+from utils.log import log
 from ui.gradient import gradientRect
 from ui.text import blit_multiline_text
 
@@ -35,6 +36,7 @@ class ClassTableWidget(object):
             else: 
                 self.class_info = classes
 
+        log("\33[0;32;1m", "Request", "ClassTableWidget - get class info successfully.")
         return self.old_class_info != self.class_info
 
     def update_all(self, now):
@@ -52,8 +54,6 @@ class ClassTableWidget(object):
 
         font1 = window.get_font("苹方黑体-中粗-简")
         font2 = window.get_font("苹方黑体-细-简")
-
-
 
         # icon
         icon = pygame.image.load("resources/Icon/class48.png")

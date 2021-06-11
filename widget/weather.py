@@ -38,7 +38,7 @@ class WeatherWidget(object):
         result = json.loads(r.text)
         assert result["code"] == "200"
 
-        log("\33[0;32;1m", "Success", "Get AQI info.")
+        log("\33[0;32;1m", "Request", "WeatherWidget - get AQI info successfully.")
         if self.AQI_station is None:
             self.old_AQI_info = self.AQI_info
             self.AQI_info =  [result["station"][0]["aqi"], result["station"][0]["category"]]
@@ -58,9 +58,10 @@ class WeatherWidget(object):
         result = json.loads(r.text)
         assert result["code"] == "200"
 
-        log("\33[0;32;1m", "Success", "Get realtime weather info.")
         self.old_realtime_info = self.realtime_info
         self.realtime_info = result["now"]
+
+        log("\33[0;32;1m", "Request", "WeatherWidget - get realtime weather info successfully")
         return self.old_realtime_info != self.realtime_info
 
     def update_next24h_weather(self):
@@ -76,9 +77,10 @@ class WeatherWidget(object):
         result = json.loads(r.text)
         assert result["code"] == "200"
 
-        log("\33[0;32;1m", "Success", "Get next 24h weather info.")
         self.old_next24h_info = self.next24h_info
         self.next24h_info = [agg_weather_info(result["hourly"][4:4+10]), agg_weather_info(result["hourly"][14:])]
+
+        log("\33[0;32;1m", "Request", "WeatherWidget - get next24h weather info successfully")
         return self.old_next24h_info != self.next24h_info
 
     def update_suggestion(self):
@@ -91,12 +93,13 @@ class WeatherWidget(object):
         result = json.loads(r.text)
         assert result["code"] == "200"
 
-        log("\33[0;32;1m", "Success", "Get tips for the day.")
         self.old_suggestion_info = self.suggestion_info
         self.suggestion_info =  {
             "运动": result["daily"][0]["category"], 
             "UV指数": result["daily"][1]["category"]
         }
+
+        log("\33[0;32;1m", "Request", "WeatherWidget - get suggestions for the day successfully")
         return self.old_suggestion_info != self.suggestion_info
 
     def get_icon(self, code, size, mode="color"):
@@ -175,8 +178,7 @@ class WeatherWidget(object):
         blit_text_in_middle(window.screen, " ".join(self.AQI_info), font, 24, window.width, y+30, (255,255,255), (x_+64, window.width))
         blit_text_in_middle(window.screen, self.realtime_info["humidity"]+"%", font, 24, window.width, y_+30, (255,255,255), (x+64, x_-10))
         blit_text_in_middle(window.screen, self.realtime_info["pressure"]+"KPa", font, 24, window.width, y_+30, (255,255,255), (x_+64, window.width))
-        # font.render_to(window.screen, (x+100, y+20), self.suggestion_info["UV指数"], (255,255,255), size=30)
-        # font.render_to(window.screen, (x_+100, y+20), " ".join(self.AQI_info), (255,255,255), size=24)
+
 
 if __name__ == "__main__":
     f = open("configs/config.yml")

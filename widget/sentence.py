@@ -21,10 +21,10 @@ class SentenceWidget(object):
         assert r.status_code == 200
         result = r.json()
 
-        log("\33[0;32;1m", "Success", "Get sentence from hitokoto")
         self.old_sentence_info = self.sentence_info
         self.sentence_info = [result["hitokoto"], result["from"]]
-
+        
+        log("\33[0;32;1m", "Request", "SentenceWidget - get sentence for the day successfully.")
         return self.old_sentence_info != self.sentence_info
 
     def update_all(self, now):
