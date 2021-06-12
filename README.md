@@ -37,7 +37,7 @@ git clone https://github.com/typoverflow/Pirror.git
         API_key:                    # 填写和风天气的API Key
     ```
   + Microsoft To Do Client ID and secret. 目前，对open API提供良好支持的代办清单APP仅有微软To Do应用，因此本项目目前仅支持Microsoft To Do作为代办事项组件的“provider”。由于Microsoft To Do使用Oauth2认证，因此你需要进行如下操作
-    + **在Azure portal注册项目**：打开https://go.microsoft.com/fwlink/?linkid=2083908，登录你的微软账户，点击画面中的“New registration”
+    + **在Azure portal注册项目**：打开[https://go.microsoft.com/fwlink/?linkid=2083908](https://go.microsoft.com/fwlink/?linkid=2083908)，登录你的微软账户，点击画面中的“New registration”
       ![](img/2021-06-12-14-07-07.png)
       然后名字一栏填入“Pirror”，在“Redirect URI”填入“https://www.baidu.com”
       ![](img/2021-06-12-14-12-10.png)
