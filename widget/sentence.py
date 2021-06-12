@@ -17,15 +17,19 @@ class SentenceWidget(object):
         self.last_update = 0
 
     def update_sentence(self):
-        r = requests.get("{}?{}&max_length={}".format(self.host, self.type_query_str, self.max_length))
-        assert r.status_code == 200
-        result = r.json()
+        try: 
+            r = requests.get("{}?{}&max_length={}".format(self.host, self.type_query_str, self.max_length))
+            assert r.status_code == 200
+            result = r.json()
 
-        self.old_sentence_info = self.sentence_info
-        self.sentence_info = [result["hitokoto"], result["from"]]
-        
-        log("\33[0;32;1m", "Request", "SentenceWidget - get sentence for the day successfully.")
-        return self.old_sentence_info != self.sentence_info
+            self.old_sentence_info = self.sentence_info
+            self.sentence_info = [result["hitokoto"], result["from"]]
+            
+            log("\33[0;32;1m", "Request", "SentenceWidget - get sentence for the day successfully.")
+            return self.old_sentence_info != self.sentence_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "SentenceWidget.update_sentence - {}.".format(e))
+            return False
 
     def update_all(self, now):
         if now - self.last_update >= self.update_cycle:

@@ -30,77 +30,93 @@ class WeatherWidget(object):
         self.last_update = 0
 
     def update_AQI(self):
-        r = requests.get(WeatherWidget.AQI_api, params={
-            "location": self.locationID, 
-            "key": self.API_key, 
-        })
-        assert r.status_code == 200
-        result = json.loads(r.text)
-        assert result["code"] == "200"
+        try: 
+            r = requests.get(WeatherWidget.AQI_api, params={
+                "location": self.locationID, 
+                "key": self.API_key, 
+            })
+            assert r.status_code == 200
+            result = json.loads(r.text)
+            assert result["code"] == "200"
 
-        log("\33[0;32;1m", "Request", "WeatherWidget - get AQI info successfully.")
-        if self.AQI_station is None:
-            self.old_AQI_info = self.AQI_info
-            self.AQI_info =  [result["station"][0]["aqi"], result["station"][0]["category"]]
-            return self.old_AQI_info != self.AQI_info
-        for s in result["station"]:
-            if s["name"] in self.AQI_station:
+            log("\33[0;32;1m", "Request", "WeatherWidget - get AQI info successfully.")
+            if self.AQI_station is None:
                 self.old_AQI_info = self.AQI_info
-                self.AQI_info = [s["aqi"], s["category"]]
+                self.AQI_info =  [result["station"][0]["aqi"], result["station"][0]["category"]]
                 return self.old_AQI_info != self.AQI_info
+            for s in result["station"]:
+                if s["name"] in self.AQI_station:
+                    self.old_AQI_info = self.AQI_info
+                    self.AQI_info = [s["aqi"], s["category"]]
+                    return self.old_AQI_info != self.AQI_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "WeatherWidget.update_AQI - {}.".format(e))
+            return False
 
     def update_realtime_weather(self):
-        r = requests.get(WeatherWidget.realtime_api, params={
-            "location": self.locationID, 
-            "key": self.API_key, 
-        })
-        assert r.status_code == 200
-        result = json.loads(r.text)
-        assert result["code"] == "200"
+        try: 
+            r = requests.get(WeatherWidget.realtime_api, params={
+                "location": self.locationID, 
+                "key": self.API_key, 
+            })
+            assert r.status_code == 200
+            result = json.loads(r.text)
+            assert result["code"] == "200"
 
-        self.old_realtime_info = self.realtime_info
-        self.realtime_info = result["now"]
+            self.old_realtime_info = self.realtime_info
+            self.realtime_info = result["now"]
 
-        log("\33[0;32;1m", "Request", "WeatherWidget - get realtime weather info successfully")
-        return self.old_realtime_info != self.realtime_info
+            log("\33[0;32;1m", "Request", "WeatherWidget - get realtime weather info successfully")
+            return self.old_realtime_info != self.realtime_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "WeatherWidget.update_realtime - {}.".format(e))
+            return False
 
     def update_next24h_weather(self):
         def agg_weather_info(hourlys):
             represent = sorted(hourlys, key=lambda x: x["icon"])
             return represent[0]
 
-        r = requests.get(WeatherWidget.next24h_api, params={
-            "location": self.locationID, 
-            "key": self.API_key, 
-        })
-        assert r.status_code == 200
-        result = json.loads(r.text)
-        assert result["code"] == "200"
+        try: 
+            r = requests.get(WeatherWidget.next24h_api, params={
+                "location": self.locationID, 
+                "key": self.API_key, 
+            })
+            assert r.status_code == 200
+            result = json.loads(r.text)
+            assert result["code"] == "200"
 
-        self.old_next24h_info = self.next24h_info
-        self.next24h_info = [agg_weather_info(result["hourly"][4:4+10]), agg_weather_info(result["hourly"][14:])]
+            self.old_next24h_info = self.next24h_info
+            self.next24h_info = [agg_weather_info(result["hourly"][4:4+10]), agg_weather_info(result["hourly"][14:])]
 
-        log("\33[0;32;1m", "Request", "WeatherWidget - get next24h weather info successfully")
-        return self.old_next24h_info != self.next24h_info
+            log("\33[0;32;1m", "Request", "WeatherWidget - get next24h weather info successfully")
+            return self.old_next24h_info != self.next24h_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "WeatherWidget.update_next24h - {}.".format(e))
+            return False
 
     def update_suggestion(self):
-        r = requests.get(WeatherWidget.suggestion_api, params={
-            "location": self.locationID, 
-            "key": self.API_key, 
-            "type": "1,5"
-        })
-        assert r.status_code == 200
-        result = json.loads(r.text)
-        assert result["code"] == "200"
+        try: 
+            r = requests.get(WeatherWidget.suggestion_api, params={
+                "location": self.locationID, 
+                "key": self.API_key, 
+                "type": "1,5"
+            })
+            assert r.status_code == 200
+            result = json.loads(r.text)
+            assert result["code"] == "200"
 
-        self.old_suggestion_info = self.suggestion_info
-        self.suggestion_info =  {
-            "运动": result["daily"][0]["category"], 
-            "UV指数": result["daily"][1]["category"]
-        }
+            self.old_suggestion_info = self.suggestion_info
+            self.suggestion_info =  {
+                "运动": result["daily"][0]["category"], 
+                "UV指数": result["daily"][1]["category"]
+            }
 
-        log("\33[0;32;1m", "Request", "WeatherWidget - get suggestions for the day successfully")
-        return self.old_suggestion_info != self.suggestion_info
+            log("\33[0;32;1m", "Request", "WeatherWidget - get suggestions for the day successfully")
+            return self.old_suggestion_info != self.suggestion_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "WeatherWidget.update_suggestion - {}.".format(e))
+            return False
 
     def get_icon(self, code, size, mode="color"):
         entry = "./resources/WeatherIcon/{}-{}/{}.png".format(mode, size, code)
@@ -175,7 +191,7 @@ class WeatherWidget(object):
         font = window.get_font("苹方黑体-准-简")
 
         blit_text_in_middle(window.screen, self.suggestion_info["UV指数"], font, 24, window.width, y+30, (255,255,255), (x+64, x_-10))
-        blit_text_in_middle(window.screen, AQI_icon[1], font, 24, window.width, y+30, (255,255,255), (x_+64, window.width))
+        blit_text_in_middle(window.screen, self.AQI_info[1], font, 24, window.width, y+30, (255,255,255), (x_+64, window.width))
         blit_text_in_middle(window.screen, self.realtime_info["humidity"]+"%", font, 24, window.width, y_+30, (255,255,255), (x+64, x_-10))
         blit_text_in_middle(window.screen, self.realtime_info["pressure"]+"Pa", font, 24, window.width, y_+30, (255,255,255), (x_+64, window.width))
 

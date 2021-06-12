@@ -21,32 +21,40 @@ class DateWidget(object):
 
     
     def update_date_info(self):
-        self.old_date_info = self.date_info
-        self.date_info = "{}年{}月{}日 {}".format(
-            getYear(), 
-            getMonth(), 
-            getDay(), 
-            getWeekdayString(True)
-        )
+        try: 
+            self.old_date_info = self.date_info
+            self.date_info = "{}年{}月{}日 {}".format(
+                getYear(), 
+                getMonth(), 
+                getDay(), 
+                getWeekdayString(True)
+            )
 
-        log("\33[0;32;1m", "Request", "DateWidget - get date info successfully.")
-        return self.old_date_info != self.date_info
+            log("\33[0;32;1m", "Request", "DateWidget - get date info successfully.")
+            return self.old_date_info != self.date_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "DateWidget.update_date - {}.".format(e))
+            return False
 
     def update_lunar_info(self):
-        self.old_lunar_info = self.lunar_info
-        solar_day = time.localtime()
-        lunar_day = self.lunar.getDayBySolar(solar_day.tm_year, solar_day.tm_mon, solar_day.tm_mday)
-        self.lunar_info = "{}{}年 {}{}月{}  {}".format(
-            DateWidget.GAN[lunar_day.Lyear2.tg], 
-            DateWidget.ZHI[lunar_day.Lyear2.dz], 
-            "闰" if lunar_day.Lleap else "", 
-            DateWidget.YMC[lunar_day.Lmc], 
-            DateWidget.RMC[lunar_day.Ldi], 
-            DateWidget.JIEQI[lunar_day.jqmc]
-        )
+        try:
+            self.old_lunar_info = self.lunar_info
+            solar_day = time.localtime()
+            lunar_day = self.lunar.getDayBySolar(solar_day.tm_year, solar_day.tm_mon, solar_day.tm_mday)
+            self.lunar_info = "{}{}年 {}{}月{}  {}".format(
+                DateWidget.GAN[lunar_day.Lyear2.tg], 
+                DateWidget.ZHI[lunar_day.Lyear2.dz], 
+                "闰" if lunar_day.Lleap else "", 
+                DateWidget.YMC[lunar_day.Lmc], 
+                DateWidget.RMC[lunar_day.Ldi], 
+                DateWidget.JIEQI[lunar_day.jqmc]
+            )
 
-        log("\33[0;32;1m", "Request", "DateWidget - get lunar info successfully.")
-        return self.old_lunar_info != self.lunar_info
+            log("\33[0;32;1m", "Request", "DateWidget - get lunar info successfully.")
+            return self.old_lunar_info != self.lunar_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "DateWidget.update_lunar - {}.".format(e))
+            return False
     
     def update_all(self, now):
         if  now - self.last_update >= self.update_cycle:

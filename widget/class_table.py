@@ -20,24 +20,28 @@ class ClassTableWidget(object):
         self.last_update =0
 
     def update_class(self):
-        today = datetime.datetime(ut.getYear(), ut.getMonth(), ut.getDay())
-        interval = today - self.begin
-        weekcount = interval.days // 7 + 1
-        self.old_class_info = self.class_info
-        if self.table == []:
-            self.class_info = "无课程"
-        if ut.getWday() >= len(self.table):
-            self.class_info = "无课程"
-        else:
-            classes = self.table[ut.getWday()]
-            classes = list(filter(lambda x: x["start"] <= weekcount <= x["end"], classes))
-            if len(classes) == 0:
+        try: 
+            today = datetime.datetime(ut.getYear(), ut.getMonth(), ut.getDay())
+            interval = today - self.begin
+            weekcount = interval.days // 7 + 1
+            self.old_class_info = self.class_info
+            if self.table == []:
                 self.class_info = "无课程"
-            else: 
-                self.class_info = classes
+            if ut.getWday() >= len(self.table):
+                self.class_info = "无课程"
+            else:
+                classes = self.table[ut.getWday()]
+                classes = list(filter(lambda x: x["start"] <= weekcount <= x["end"], classes))
+                if len(classes) == 0:
+                    self.class_info = "无课程"
+                else: 
+                    self.class_info = classes
 
-        log("\33[0;32;1m", "Request", "ClassTableWidget - get class info successfully.")
-        return self.old_class_info != self.class_info
+            log("\33[0;32;1m", "Request", "ClassTableWidget - get class info successfully.")
+            return self.old_class_info != self.class_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "ClassTableWidget.update_class - {}.".format(e))
+            return False
 
     def update_all(self, now):
         if now-self.last_update >= self.update_cycle:

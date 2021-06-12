@@ -39,71 +39,80 @@ class TodoListWidget(object):
         self.last_update = 0
 
     def fetch_refresh_token(self):
-        self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
-        authorization_url, _ = self.oauth.authorization_url(self.auth_host + "/authorize")
+        try: 
+            self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
+            authorization_url, _ = self.oauth.authorization_url(self.auth_host + "/authorize")
 
-        log("\n\033[0;33;1m", "Authorize", "ToDoListWidget - 在浏览器中打开下面的URL，并在授权后将重定向的URL复制粘贴进入终端内")
-        print(authorization_url)
-        res_url = input("重定向的URL为:\n")
+            log("\n\033[0;33;1m", "Authorize", "ToDoListWidget - 在浏览器中打开下面的URL，并在授权后将重定向的URL复制粘贴进入终端内")
+            print(authorization_url)
+            res_url = input("重定向的URL为:\n")
 
-        tokens = self.oauth.fetch_token(self.auth_host + "/token", 
-            client_secret=self.client_secret, 
-            authorization_response=res_url, 
-            scope=self.scope, 
-        )
+            tokens = self.oauth.fetch_token(self.auth_host + "/token", 
+                client_secret=self.client_secret, 
+                authorization_response=res_url, 
+                scope=self.scope, 
+            )
 
-        self.refresh_token      = tokens["refresh_token"]
-        self.access_token       = tokens["access_token"]
-        self.token_expire_time  = tokens["expires_in"] - 600
-        self.token_create_time  = time.time()
-        log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do API authorized. ")
+            self.refresh_token      = tokens["refresh_token"]
+            self.access_token       = tokens["access_token"]
+            self.token_expire_time  = tokens["expires_in"] - 600
+            self.token_create_time  = time.time()
+            log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do API authorized. ")
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "ToDoListWidget.fetch_refresh_token - {}.".format(e))
 
     def get_token(self):
-        # check expiration
-        if (time.time() - self.token_create_time) > self.token_expire_time:
-            new_tokens = self.oauth.refresh_token(self.auth_host + "/token", self.refresh_token, client_id=self.client_id, client_secret=self.client_secret)
-            self.refresh_token      = new_tokens["refresh_token"]
-            self.access_token       = new_tokens["access_token"]
-            self.token_expire_time  = new_tokens["expires_in"] - 600
-            self.token_create_time  = time.time()
-            log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do access token refreshed successfully.")
+        try: 
+            # check expiration
+            if (time.time() - self.token_create_time) > self.token_expire_time:
+                new_tokens = self.oauth.refresh_token(self.auth_host + "/token", self.refresh_token, client_id=self.client_id, client_secret=self.client_secret)
+                self.refresh_token      = new_tokens["refresh_token"]
+                self.access_token       = new_tokens["access_token"]
+                self.token_expire_time  = new_tokens["expires_in"] - 600
+                self.token_create_time  = time.time()
+                log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do access token refreshed successfully.")
 
-        return self.access_token
+            return self.access_token
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "ToDoListWidget.get_token - {}.".format(e))
         
 
     def update_tasks(self):
-        token = self.get_token()
-        headers = {
-            "Authorization": "Bearer {}".format(token)
-        }
-        tasks = []
+        try: 
+            token = self.get_token()
+            headers = {
+                "Authorization": "Bearer {}".format(token)
+            }
+            tasks = []
 
-        r = requests.get(self.api_host + "/me/todo/lists", headers=headers)
-        assert r.status_code == 200
-        lids = list(map(lambda x: (x["id"], x["displayName"]), r.json()["value"]))
-
-        for lid, lname in lids:
-            r= requests.get(self.api_host + "/me/todo/lists/{}/tasks".format(lid), headers=headers)
+            r = requests.get(self.api_host + "/me/todo/lists", headers=headers)
             assert r.status_code == 200
-            for _ in r.json()["value"]:
-                info = {
-                    "lid": lid, 
-                    "lname": lname, 
-                    "tid": _["id"], 
-                    "title": _["title"], 
-                    "body": _["body"], 
-                    "status": _["status"], 
-                    "importance": _["importance"], 
-                    "lastModifiedDateTime": _["lastModifiedDateTime"], 
-                    "completedDateTime": _.get("completedDateTime", "")
-                }
-                tasks.append(info)
-        
-        self.old_tasks_info = self.tasks_info
-        self.tasks_info = tasks
+            lids = list(map(lambda x: (x["id"], x["displayName"]), r.json()["value"]))
 
-        log("\33[0;32;1m", "Request", "ToDoListWidget - get tasks info successfully.")
-        return self.old_tasks_info != self.tasks_info
+            for lid, lname in lids:
+                r= requests.get(self.api_host + "/me/todo/lists/{}/tasks".format(lid), headers=headers)
+                assert r.status_code == 200
+                for _ in r.json()["value"]:
+                    info = {
+                        "lid": lid, 
+                        "lname": lname, 
+                        "tid": _["id"], 
+                        "title": _["title"], 
+                        "body": _["body"], 
+                        "status": _["status"], 
+                        "importance": _["importance"], 
+                        "lastModifiedDateTime": _["lastModifiedDateTime"], 
+                        "completedDateTime": _.get("completedDateTime", "")
+                    }
+                    tasks.append(info)
+            
+            self.old_tasks_info = self.tasks_info
+            self.tasks_info = tasks
+
+            log("\33[0;32;1m", "Request", "ToDoListWidget - get tasks info successfully.")
+            return self.old_tasks_info != self.tasks_info
+        except Exception as e:
+            log("\33[0;31;1m", "Error", "ToDoListWidget.update_tasks - {}.".format(e))
 
     def update_all(self, now):
         if now - self.last_update >= self.update_cycle:
