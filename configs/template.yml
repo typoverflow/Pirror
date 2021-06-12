@@ -1,0 +1,75 @@
+global:
+  zh_CN: True
+
+window: 
+  FPS: 30
+  width: 900
+  height: 1600
+  backgound: 
+
+widgets: 
+  class_table: True
+  weather: True
+  todo_list: True
+  sentence: True
+  date: True
+
+class_table:
+  update_cycle: 1440
+  begin_date: "2021-03-01"     # 填写本学期课程的开始时间
+  table: 
+    Monday:
+      - name: 博弈论及其应用
+        start: 2 
+        end: 17
+        room: 仙I-108
+        range: 9-10
+
+    Tuesday:
+      - name: 计算方法
+        start: 2
+        end: 17
+        room: 仙I-108
+        range: 5-6
+
+    Wednesday:
+      - name: 矩阵计算
+        start: 2
+        end: 17
+        room: 仙II-103
+        range: 5-6
+
+    Thursday:
+      - name: 矩阵计算
+        start: 2
+        end: 17
+        room: 仙II-103
+        range: 5-6
+
+    Friday: 
+    
+weather: 
+  update_cycle: 60
+  API_key:                    # 填写和风天气的API Key
+  location: 南京
+  AQI_station: 
+    - 仙林大学城
+    - 奥体中心
+
+todo_list:
+  update_cycle: 30
+  provider: "microsoft"       # 目前仅支持Microsoft To Do
+
+  microsoft: 
+    client_id:                # 填写client id
+    client_secret:            # 填写client secret
+    redirect_uri: https://www.baidu.com
+    scopes: "Tasks.ReadWrite offline_access"
+
+sentence: 
+    update_cycle: 30
+    type: "d h i"
+    max_length: 20
+
+date:
+  update_cycle: 30

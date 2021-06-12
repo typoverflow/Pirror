@@ -124,5 +124,5 @@ if __name__ == "__main__":
         show_version(window)
         # window.clock.tick(window.fps)
         pygame.display.update()
-        pygame.time.delay(30000)
+        pygame.time.delay(10000)
         # time.sleep(1000000000)
