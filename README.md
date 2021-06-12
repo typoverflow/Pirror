@@ -1,8 +1,10 @@
 # Pirror
-「Pirror」是一个信息集成终端。由于最初是为树莓派平台下的魔镜项目而设计，因此被命名为Pirror（raspberry-**PI** mi**RROR**）
+「Pirror」是一个信息集成终端。由于最初是为树莓派平台下的魔镜项目而设计，因此被命名为Pirror（raspberry-**PI** mi**RROR**）。它在@PixelChen24的[「Magirror」](https://github.com/PixelChen24/Magirror)项目基础上，完全重构了「Magirror」的代码结构，以一种更简洁、扩展性更强、部署更加便捷的形式进行构建。
 
-「Pirror」在@PixelChen24的[「Magirror」](https://github.com/PixelChen24/Magirror)项目基础上，完全重构了「Magirror」的代码结构，以一种更简洁、扩展性更强、部署更加便捷的形式进行构建，∨1.0.0版本的界面如下所示
+∨1.0.0版本的界面如下所示
+<center>
 <img src=img/2021-06-12-14-39-10.png width=300>
+</center>
 
 「Pirror」目前支持以下可以呈现在屏幕上的组件（Widget）
 + **时间组件**：当前时间，形式为`小时：分钟`
@@ -28,7 +30,7 @@ git clone https://github.com/typoverflow/Pirror.git
         sentence: True
         date: True
     ```
-  将不想开启的组件填写为False即可
+    将不想开启的组件填写为False即可
   + 和风天气API Key。本项目使用和风天气的API提供实时天气和天气预报。为此，你需要在[和风天气](https://dev.qweather.com/)注册并获取API密钥。同时，你还需要认证成为个人开发者，才可获取天气预报的API权限。获取后，填写在下面这个地方即可
     ```yml
     weather: 
@@ -37,7 +39,7 @@ git clone https://github.com/typoverflow/Pirror.git
   + Microsoft To Do Client ID and secret. 目前，对open API提供良好支持的代办清单APP仅有微软To Do应用，因此本项目目前仅支持Microsoft To Do作为代办事项组件的“provider”。由于Microsoft To Do使用Oauth2认证，因此你需要进行如下操作
     + **在Azure portal注册项目**：打开https://go.microsoft.com/fwlink/?linkid=2083908，登录你的微软账户，点击画面中的“New registration”
       ![](img/2021-06-12-14-07-07.png)
-    然后名字一栏填入“Pirror”，在“Redirect URI”填入“https://www.baidu.com”
+      然后名字一栏填入“Pirror”，在“Redirect URI”填入“https://www.baidu.com”
       ![](img/2021-06-12-14-12-10.png)
     + **开启项目权限**：在左侧边栏点击“API permissions”，选择“Add a permission”。
       ![](img/2021-06-12-14-12-43.png)
