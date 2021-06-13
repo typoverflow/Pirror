@@ -5,7 +5,7 @@ import sys
 import os
 import time
 import yaml
-from skimage import io, transform
+# from skimage import io, transform
 import numpy as np
 
 import pygame
@@ -26,8 +26,9 @@ class Window(object):
         if background_path is None:
             self.background = np.zeros((self.width, self.height, 3))
         else:
-            self.background = io.imread(background_path)
-            self.background = transform.resize(self.background, (self.height, self.width), anti_aliasing=True)
+            raise NotImplementedError
+            # self.background = io.imread(background_path)
+            # self.background = transform.resize(self.background, (self.height, self.width), anti_aliasing=True)
         self.background_time_area = self.background[0:400, 0:180 , :]
         
         self.background = pygame.surfarray.make_surface(self.background)
