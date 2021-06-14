@@ -40,18 +40,27 @@ class SentenceWidget(object):
             return False
 
     def render(self, window):
+        def process(sentence):
+            for stress in {"?", "？", "!", "！"}:
+                if stress in sentence:
+                    return "「"+sentence+"」"
+            if sentence[-1] in {"。", ".", ",", "，"}:
+                if "。" in sentence[:-1] or "." in sentence[:-1]:
+                    return "「"+sentence+"」"
+                else:
+                    return "「"+sentence[:-1]+"」"
+            return ""
+
         anchor_y = window.height*2/3
         anchor_x = 0
         x, y = anchor_x, anchor_y
 
         font = window.get_font("苹方黑体-细-简")
-        text = self.sentence_info[0]
-        if text[-1] in {"。", ".", "，"}:
-            text = text[:-1]
-        text = "「"+text+"」"
+        sentence = process(self.sentence_info[0])
+
         quote = self.sentence_info[1]
         quote = "《"+quote+"》"
-        _, y = blit_text_in_middle(window.screen, text, font, 30, window.width, y, (255,255,255))
+        _, y = blit_text_in_middle(window.screen, sentence, font, 30, window.width, y, (255,255,255))
         y += 30
 
         _, y = blit_text_in_middle(window.screen, quote, font, 24, window.width, y, (180,180,180))
