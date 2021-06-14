@@ -22,27 +22,27 @@ class Window(object):
         self.width = config.get("width", 900)
         self.height = config.get("height", 1600)
 
+        self.screen = pygame.display.set_mode(size=(self.width, self.height))
+        pygame.display.set_caption("Pirror")
+        # pygame.mouse.set_visible(False)
+        self.clock = pygame.time.Clock()
+
         background_path = config.get("background", None)
         if background_path is None:
             self.background = np.zeros((self.width, self.height, 3))
+            self.background_time_area = self.background[0:400, 0:180, :]
+            
+            self.background = pygame.surfarray.make_surface(self.background)
+            self.background_time_area = pygame.surfarray.make_surface(self.background_time_area)
         else:
-            raise NotImplementedError
-            # self.background = io.imread(background_path)
-            # self.background = transform.resize(self.background, (self.height, self.width), anti_aliasing=True)
-        self.background_time_area = self.background[0:400, 0:180 , :]
-        
-        self.background = pygame.surfarray.make_surface(self.background)
-        self.background_time_area = pygame.surfarray.make_surface(self.background_time_area)
+            self.background = pygame.image.load(background_path)
+            self.background = pygame.transform.scale(self.background, (self.width, self.height))
+            self.background_time_area = self.background.subsurface((0,0,400, 180))
 
         self.fonts = dict()
         for font in os.listdir("./resources/Fonts"):
             path = os.path.join("./resources/Fonts", font)
             self.fonts[font.split(".")[0]] = pygame.freetype.Font(path)
-
-        self.screen = pygame.display.set_mode(size=(self.width, self.height))
-        pygame.display.set_caption("Pirror")
-        # pygame.mouse.set_visible(False)
-        self.clock = pygame.time.Clock()
 
     def get_font(self, font):
         return self.fonts.get(font)

@@ -49,7 +49,7 @@ class SentenceWidget(object):
                     return "「"+sentence+"」"
                 else:
                     return "「"+sentence[:-1]+"」"
-            return ""
+            return sentence
 
         anchor_y = window.height*2/3
         anchor_x = 0

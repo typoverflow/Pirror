@@ -76,7 +76,7 @@ git clone https://github.com/typoverflow/Pirror.git
 1. 在内容切换时，添加淡入淡出动画
 2. 添加RSS控件
 3. 添加滴答清单的API接口和代办清单组件接口
-4. 添加透明背景支持
+4. <del>添加透明背景支持</del>，pygame貌似无法实现该功能。
 5. 一句话组件：添加固定句子功能
 
 ## 更新日志
