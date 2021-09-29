@@ -1,3 +1,4 @@
+from os import set_blocking
 import yaml
 import requests
 import time
@@ -45,7 +46,7 @@ class SentenceWidget(object):
                 if stress in sentence:
                     return "「"+sentence+"」"
             if sentence[-1] in {"。", ".", ",", "，"}:
-                if "。" in sentence[:-1] or "." in sentence[:-1]:
+                if "。" in sentence[:-1] or "." in sentence[:-1] or "；" in sentence[:-1] or ";" in sentence[:-1]:
                     return "「"+sentence+"」"
                 else:
                     return "「"+sentence[:-1]+"」"
