@@ -34,6 +34,14 @@ def blit_text_in_middle(screen, text, font, size, width, y, color, x_range=None)
 
     return width, y+text_rect.height+10
     
+def screen_len(text):
+    ret = 0
+    for c in text:
+        if not "a"<=c<="z" and not "A" <= c <= "z":
+            ret += 2
+        else:
+            ret += 1
+    return ret
 
 
 if __name__ == "__main__":

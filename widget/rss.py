@@ -9,7 +9,7 @@ from widget.base import BaseWidget
 from utils.log import log
 from utils.url import safe_url
 from ui.gradient import gradientRect
-from ui.text import blit_multiline_text, blit_text_in_middle
+from ui.text import blit_multiline_text, blit_text_in_middle, screen_len
 
 class RSSWidget(BaseWidget):
     def __init__(self, config):
@@ -122,7 +122,7 @@ class RSSWidget(BaseWidget):
             unread_info.extend(headlines[:min(self.max_entry_num, len(headlines))])
         random.shuffle(unread_info)
         unread_info = unread_info[:min(self.max_entry_num, len(unread_info))]
-        unread_info = sorted(unread_info, key=lambda x:len(x["title"]+x["feed"]), reverse=True)
+        unread_info = sorted(unread_info, key=lambda x:screen_len(x["title"]+x["feed"]), reverse=True)
 
         # unread_info = []
         # for cat_name, headlines in cat2headlines.items():
@@ -164,7 +164,7 @@ class RSSWidget(BaseWidget):
 
         # entries
         x2, y2 = x1, y1+15
-        titles = ["《"+i["title"]+"》   by "+i["feed"] for i in self.unread_info]
+        titles = ["《"+i["title"]+"》 by "+i["feed"] for i in self.unread_info]
         # feeds = [i["feed"] for i in self.unread_info]
         blit_multiline_text(window.screen, titles, window.get_font("苹方黑体-细-简"), 26, (x2, y2), (255,255,255), lineheight=42)
 

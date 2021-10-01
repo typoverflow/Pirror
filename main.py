@@ -1,4 +1,4 @@
-VER = "v1.0.0"
+VER = "v1.1.0"
 
 import pygame
 import sys
