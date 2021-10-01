@@ -117,7 +117,7 @@ if __name__ == "__main__":
             window.screen.blit(window.background, (0, 0))
             for widget in widgets:
                 widget.render(window)
-            log("\33[0;34;1m", "Render", "Screen - Re-rendering the whole screen.")
+            log("blue", "Render", "Screen - Re-rendering the whole screen.")
         
         # blit time and version info to screen
         window.screen.blit(window.background_time_area, (0, 0))

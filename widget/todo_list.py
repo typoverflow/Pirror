@@ -5,6 +5,7 @@ import os
 import time
 import datetime
 
+from widget.base import BaseWidget
 from utils.log import log
 from ui.gradient import gradientRect
 from ui.text import blit_multiline_text
@@ -13,8 +14,10 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"]   = "1"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"]    = "1"
 os.environ["OAUTHLIB_IGNORE_SCOPE_CHANGE"]  = "1"
 
-class TodoListWidget(object):
+class TodoListWidget(BaseWidget):
     def __init__(self, config):
+        super(TodoListWidget, self).__init__(config)
+
         self.provider = config.get("provider", {})
         if self.provider == {}:
             raise ValueError("To do list provider not set!")
@@ -43,7 +46,7 @@ class TodoListWidget(object):
             self.oauth = OAuth2Session(self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
             authorization_url, _ = self.oauth.authorization_url(self.auth_host + "/authorize")
 
-            log("\n\033[0;33;1m", "Authorize", "ToDoListWidget - 在浏览器中打开下面的URL，并在授权后将重定向的URL复制粘贴进入终端内")
+            log("yellow", "Authorize", "ToDoListWidget - 在浏览器中打开下面的URL，并在授权后将重定向的URL复制粘贴进入终端内")
             print(authorization_url)
             res_url = input("重定向的URL为:\n")
 
@@ -57,9 +60,9 @@ class TodoListWidget(object):
             self.access_token       = tokens["access_token"]
             self.token_expire_time  = tokens["expires_in"] - 600
             self.token_create_time  = time.time()
-            log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do API authorized. ")
+            log("yellow", "Authorize", "ToDoListWidget - Microsoft To Do API authorized. ")
         except Exception as e:
-            log("\33[0;31;1m", "Error", "ToDoListWidget.fetch_refresh_token - {}.".format(e))
+            log("red", "Error", "ToDoListWidget.fetch_refresh_token - {}.".format(e))
 
     def get_token(self):
         try: 
@@ -70,11 +73,11 @@ class TodoListWidget(object):
                 self.access_token       = new_tokens["access_token"]
                 self.token_expire_time  = new_tokens["expires_in"] - 600
                 self.token_create_time  = time.time()
-                log("\33[0;33;1m", "Authorize", "ToDoListWidget - Microsoft To Do access token refreshed successfully.")
+                log("yellow", "Authorize", "ToDoListWidget - Microsoft To Do access token refreshed successfully.")
 
             return self.access_token
         except Exception as e:
-            log("\33[0;31;1m", "Error", "ToDoListWidget.get_token - {}.".format(e))
+            log("red", "Error", "ToDoListWidget.get_token - {}.".format(e))
         
 
     def update_tasks(self):
@@ -109,10 +112,10 @@ class TodoListWidget(object):
             self.old_tasks_info = self.tasks_info
             self.tasks_info = tasks
 
-            log("\33[0;32;1m", "Request", "ToDoListWidget - get tasks info successfully.")
+            log("green", "Request", "ToDoListWidget - get tasks info successfully.")
             return self.old_tasks_info != self.tasks_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "ToDoListWidget.update_tasks - {}.".format(e))
+            log("red", "Error", "ToDoListWidget.update_tasks - {}.".format(e))
 
     def update_all(self, now):
         if now - self.last_update >= self.update_cycle:

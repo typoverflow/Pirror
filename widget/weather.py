@@ -4,11 +4,12 @@ import yaml
 import json
 import pygame
 
+from widget.base import BaseWidget
 from utils.log import log
 from ui.gradient import gradientRect
 from ui.text import blit_text_in_middle
 
-class WeatherWidget(object):
+class WeatherWidget(BaseWidget):
     locationID_list = pandas.read_csv("resources/locationID.csv")
     AQI_api = "https://devapi.qweather.com/v7/air/now"
     realtime_api = "https://devapi.qweather.com/v7/weather/now"
@@ -16,6 +17,8 @@ class WeatherWidget(object):
     suggestion_api = "https://devapi.qweather.com/v7/indices/1d"
 
     def __init__(self, config):
+        super(WeatherWidget, self).__init__(config)
+
         self.location = config.get("location", "南京")
         self.locationID = WeatherWidget.locationID_list[WeatherWidget.locationID_list["城市名称"]==self.location].iloc[0, 0]
         self.AQI_station = config.get("AQI_station", None)
@@ -39,7 +42,7 @@ class WeatherWidget(object):
             result = json.loads(r.text)
             assert result["code"] == "200"
 
-            log("\33[0;32;1m", "Request", "WeatherWidget - get AQI info successfully.")
+            log("green", "Request", "WeatherWidget - get AQI info successfully.")
             if self.AQI_station is None:
                 self.old_AQI_info = self.AQI_info
                 self.AQI_info =  [result["station"][0]["aqi"], result["station"][0]["category"]]
@@ -50,7 +53,7 @@ class WeatherWidget(object):
                     self.AQI_info = [s["aqi"], s["category"]]
                     return self.old_AQI_info != self.AQI_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "WeatherWidget.update_AQI - {}.".format(e))
+            log("red", "Error", "WeatherWidget.update_AQI - {}.".format(e))
             return False
 
     def update_realtime_weather(self):
@@ -66,10 +69,10 @@ class WeatherWidget(object):
             self.old_realtime_info = self.realtime_info
             self.realtime_info = result["now"]
 
-            log("\33[0;32;1m", "Request", "WeatherWidget - get realtime weather info successfully")
+            log("green", "Request", "WeatherWidget - get realtime weather info successfully")
             return self.old_realtime_info != self.realtime_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "WeatherWidget.update_realtime - {}.".format(e))
+            log("red", "Error", "WeatherWidget.update_realtime - {}.".format(e))
             return False
 
     def update_next24h_weather(self):
@@ -89,10 +92,10 @@ class WeatherWidget(object):
             self.old_next24h_info = self.next24h_info
             self.next24h_info = [agg_weather_info(result["hourly"][4:4+10]), agg_weather_info(result["hourly"][14:])]
 
-            log("\33[0;32;1m", "Request", "WeatherWidget - get next24h weather info successfully")
+            log("green", "Request", "WeatherWidget - get next24h weather info successfully")
             return self.old_next24h_info != self.next24h_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "WeatherWidget.update_next24h - {}.".format(e))
+            log("red", "Error", "WeatherWidget.update_next24h - {}.".format(e))
             return False
 
     def update_suggestion(self):
@@ -112,10 +115,10 @@ class WeatherWidget(object):
                 "UV指数": result["daily"][1]["category"]
             }
 
-            log("\33[0;32;1m", "Request", "WeatherWidget - get suggestions for the day successfully")
+            log("green", "Request", "WeatherWidget - get suggestions for the day successfully")
             return self.old_suggestion_info != self.suggestion_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "WeatherWidget.update_suggestion - {}.".format(e))
+            log("red", "Error", "WeatherWidget.update_suggestion - {}.".format(e))
             return False
 
     def get_icon(self, code, size, mode="color"):

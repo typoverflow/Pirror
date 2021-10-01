@@ -3,13 +3,16 @@ from utils import time as ut
 import yaml
 import pygame
 
+from widget.base import BaseWidget
 from utils.log import log
 from ui.gradient import gradientRect
 from ui.text import blit_multiline_text
 
 
-class ClassTableWidget(object):
+class ClassTableWidget(BaseWidget):
     def __init__(self, config):
+        super(ClassTableWidget, self).__init__(config)
+
         self.begin = datetime.datetime.strptime(config.get("begin_date"), "%Y-%m-%d")
 
         self.table = config.get("table", [])
@@ -37,10 +40,10 @@ class ClassTableWidget(object):
                 else: 
                     self.class_info = classes
 
-            log("\33[0;32;1m", "Request", "ClassTableWidget - get class info successfully.")
+            log("green", "Request", "ClassTableWidget - get class info successfully.")
             return self.old_class_info != self.class_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "ClassTableWidget.update_class - {}.".format(e))
+            log("red", "Error", "ClassTableWidget.update_class - {}.".format(e))
             return False
 
     def update_all(self, now):

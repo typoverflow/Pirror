@@ -3,11 +3,14 @@ import yaml
 import requests
 import time
 
+from widget.base import BaseWidget
 from utils.log import log
 from ui.text import blit_text_in_middle
 
-class SentenceWidget(object):
+class SentenceWidget(BaseWidget):
     def __init__(self, config):
+        super(SentenceWidget, self).__init__(config)
+
         self.type = config.get("type", "").split()
         self.type_query_str = "".join(["&c="+i for i in self.type])
         self.max_length = config.get("max_length", 15)
@@ -26,10 +29,10 @@ class SentenceWidget(object):
             self.old_sentence_info = self.sentence_info
             self.sentence_info = [result["hitokoto"], result["from"]]
             
-            log("\33[0;32;1m", "Request", "SentenceWidget - get sentence for the day successfully.")
+            log("green", "Request", "SentenceWidget - get sentence for the day successfully.")
             return self.old_sentence_info != self.sentence_info
         except Exception as e:
-            log("\33[0;31;1m", "Error", "SentenceWidget.update_sentence - {}.".format(e))
+            log("red", "Error", "SentenceWidget.update_sentence - {}.".format(e))
             return False
 
     def update_all(self, now):
