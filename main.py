@@ -62,6 +62,8 @@ def initialize_widgets(global_config):
             ret.append(widget.SentenceWidget(global_config.get("sentence")))
         elif w == "date":
             ret.append(widget.DateWidget(global_config.get("date")))
+        elif w  == "rss":
+            ret.append(widget.RSSWidget(global_config.get("rss")))
         else:
             raise NotImplementedError("Widget {} has not been implemented yet".format(w))
     return ret

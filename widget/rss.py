@@ -9,7 +9,7 @@ from widget.base import BaseWidget
 from utils.log import log
 from utils.url import safe_url
 from ui.gradient import gradientRect
-from ui.text import blit_text_in_middle
+from ui.text import blit_multiline_text, blit_text_in_middle
 
 class RSSWidget(BaseWidget):
     def __init__(self, config):
@@ -119,12 +119,19 @@ class RSSWidget(BaseWidget):
         # 筛选要显示的title
         unread_info = []
         for cat_name, headlines in cat2headlines.items():
-            cat2headlines[cat_name] = headlines[:min(self.max_entry_num, len(headlines))]
-        tmp = dict()
-        for _ in range(self.max_entry_num):
-            cat = random.choice(self.focused_categories)
-            tmp[cat] = id = tmp.get(cat, -1) + 1
-            unread_info.append(cat2headlines[cat][id])
+            unread_info.extend(headlines[:min(self.max_entry_num, len(headlines))])
+        random.shuffle(unread_info)
+        unread_info = unread_info[:min(self.max_entry_num, len(unread_info))]
+        unread_info = sorted(unread_info, key=lambda x:len(x["title"]+x["feed"]), reverse=True)
+
+        # unread_info = []
+        # for cat_name, headlines in cat2headlines.items():
+        #     cat2headlines[cat_name] = headlines[:min(self.max_entry_num, len(headlines))]
+        # tmp = dict()
+        # for _ in range(self.max_entry_num):
+        #     cat = random.choice(self.focused_categories)
+        #     tmp[cat] = id = tmp.get(cat, -1) + 1
+        #     unread_info.append(cat2headlines[cat][id])
         
         self.old_unread_info = self.unread_info
         self.unread_info = unread_info
@@ -140,7 +147,30 @@ class RSSWidget(BaseWidget):
             return False
 
     def render(self, window):
-        pass
+        anchor_x = 25
+        anchor_y = window.height - 180
+
+        x = anchor_x
+        y = anchor_y
+
+        # What's UP? 标题文字
+        title_surf, title_rect = window.get_font("sarasa-mono-cl-bolditalic").render("What's UP?", (255,255,255), size=36)
+        window.screen.blit(title_surf, (x, y))
+
+        # 分割线
+        x1, y1 = x,  y+title_rect.height + 15
+        line = gradientRect((300, 2), (255,255,255), (0,0,0))
+        window.screen.blit(line, (x1, y1))
+
+        # entries
+        x2, y2 = x1, y1+15
+        titles = ["《"+i["title"]+"》   by "+i["feed"] for i in self.unread_info]
+        # feeds = [i["feed"] for i in self.unread_info]
+        blit_multiline_text(window.screen, titles, window.get_font("苹方黑体-细-简"), 26, (x2, y2), (255,255,255), lineheight=42)
+
+        # blit_multiline_text(window.screen, feeds, window.get_font("苹方黑体-细-简"), 20, (x2+600, y2+4), (200,200,200), lineheight=42)
+
+
 
 if __name__ == "__main__":
     import yaml
