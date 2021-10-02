@@ -3,7 +3,7 @@
 
 ∨1.1.0版本的界面如下所示
 
-<p float="left">
+<p float="middle">
   <img src="docs/img/v1_demo.png" width="302" />
   <img src="docs/img/v1.1_demo.png" width="300" />
 </p>
@@ -21,13 +21,13 @@
 作为信息集成终端，「Pirror」并不对使用场景作出假设，你完全可以将它作为后台程序运行，隐藏ui边框，这样你就得到了一个呈现多元信息的**桌面控件**。
 
 但是我们更建议将「Pirror」部署在树莓派平台，作为“魔镜”的显示界面。大致效果如下
-<p float="left">
+<p float="middle">
   <img src="docs/img/demo1.jpg" width="265" />
   <img src="docs/img/demo3.png" width="300" />
 </p>
 
 ## 安装与配置
-TODO
+请参考[安装教程](docs/tutorial.md)。
 
 ## 功能前瞻
 1. 在内容切换时，添加淡入淡出动画

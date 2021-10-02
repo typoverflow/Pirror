@@ -87,13 +87,16 @@ def show_version(window):
     ver_surf, ver_rect = font.render(ver_string, (255,255,255), size=18)
     window.screen.blit(ver_surf, (window.width-10*len(ver_string), window.height-22))
 
-
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", type=str, default="configs/config.yml")
+args = parser.parse_args()
 
 if __name__ == "__main__":
     pygame.init()
 
     # 加载全局配置
-    with open("configs/config.yml", "r") as fp:
+    with open(args.config, "r") as fp:
         global_config = yaml.load(fp, yaml.SafeLoader)
 
     # 生成屏幕

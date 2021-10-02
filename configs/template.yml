@@ -13,6 +13,7 @@ widgets:
   todo_list: True
   sentence: True
   date: True
+  rss: True
 
 class_table:
   update_cycle: 1440
@@ -73,3 +74,11 @@ sentence:
 
 date:
   update_cycle: 30
+
+rss:
+  update_cycle: 10
+  server_api_url: http://rss.typoverflow.me/tt-rss/api/
+  user_name: "******"
+  password: "******"
+  max_entry_num: 3
+  focused_categories: 
