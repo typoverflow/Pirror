@@ -54,23 +54,23 @@ rss: True
 ```
 
 ### class_table
-课程表widget的配置项，见[课程表widget配置](docs/class_table_configuration.md)。
+课程表widget的配置项，见[课程表widget配置](widget/class_table_widget_configuration.md)。
 
 ### weather
-天气预报widget的配置项，见[天气widget配置](docs/weather_widget_configuration.md)。
+天气预报widget的配置项，见[天气widget配置](widget/weather_widget_configuration.md)。
 
 ### todo list
-代办清单widget的配置项，见[代办清单widget配置](docs/todo_list_widget_configuration.md)。
+代办清单widget的配置项，见[代办清单widget配置](widget/todo_list_widget_configuration.md)。
 
 ### sentence
-“一句话”widget的配置项，见[一句话组件widget配置](docs/sentence_widget_configuration.md)。
+格言widget的配置项，见[格言组件widget配置](widget/sentence_widget_configuration.md)。
 
 ### date
 万年历widget的配置项。
 仅有一个参数，`update_cycle`指定万年历重新渲染的周期（分钟）。
 
 ### rss
-RSS widget的配置项，见[rss widget配置](docs/rss_widget_configuration.md)。
+RSS widget的配置项，见[rss widget配置](widget/rss_widget_configuration.md)。
 
 ---
 
