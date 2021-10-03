@@ -1,4 +1,4 @@
-# Install and Deployment
+# Installation and Deployment
 由于「Pirror」仅仅是一个信息集成终端，它依赖大量的第三方服务来实现一些特殊的组件功能。其中绝大多数功能是借助请求服务API的方式实现的。因此，接下来的介绍将会按照如下顺序
 1. 如何将Pirror代码部署到本地，并安装所需要的依赖；
 2. 如何实现「Pirror」所涉及的各个widget组件的功能；

@@ -1,5 +1,5 @@
 # RSS widget配置
-和代办清单一样，RSS也是基于第三方服务的。在目前的实现中，RSS widget与我个人搭建的Tiny Tiny RSS服务http://rss.typoverflow.me进行沟通，实时同步unread推送到Pirror的显示界面上。
+和代办清单一样，RSS也是基于第三方服务的。在目前的实现中，RSS widget与我个人搭建的Tiny Tiny RSS服务[http://rss.typoverflow.me](http://rss.typoverflow.me)进行沟通，实时同步unread推送到Pirror的显示界面上。
 
 ![](img/2021-10-03-18-00-38.png)
 
