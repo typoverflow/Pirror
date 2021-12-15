@@ -4,6 +4,7 @@ import yaml
 import json
 import pygame
 import io
+import cairosvg
 
 from widget.base import BaseWidget
 from utils.log import log
@@ -125,7 +126,8 @@ class WeatherWidget(BaseWidget):
         entry = "./resources/WeatherIcon/{}.svg".format(code)
         with open(entry, "r") as fp:
             svg_str = fp.read().format(size, size, color)
-        icon = pygame.image.load(io.BytesIO(svg_str.encode()))
+        new_bytes = cairosvg.svg2png(bytestring=svg_str.encode())
+        icon = pygame.image.load(io.BytesIO(new_bytes))
         return icon
 
     def update_all(self, now):
