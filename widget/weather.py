@@ -3,6 +3,7 @@ import pandas
 import yaml
 import json
 import pygame
+import io
 
 from widget.base import BaseWidget
 from utils.log import log
@@ -24,7 +25,6 @@ class WeatherWidget(BaseWidget):
         self.AQI_station = config.get("AQI_station", None)
         self.API_key = config.get("API_key", "")
 
-        self.icon_buffer = {}
         self.AQI_info = None
         self.realtime_info = None
         self.next24h_info = None
@@ -121,12 +121,12 @@ class WeatherWidget(BaseWidget):
             log("red", "Error", "WeatherWidget.update_suggestion - {}.".format(e))
             return False
 
-    def get_icon(self, code, size, mode="color"):
-        entry = "./resources/WeatherIcon/{}-{}/{}.png".format(mode, size, code)
-        if entry in self.icon_buffer:
-            return self.icon_buffer.get(entry)
-        self.icon_buffer[entry] = pygame.image.load(entry)
-        return self.icon_buffer[entry]
+    def get_icon(self, code, size, color="white"):
+        entry = "./resources/WeatherIcon/{}.svg".format(code)
+        with open(entry, "r") as fp:
+            svg_str = fp.read().format(size, size, color)
+        icon = pygame.image.load(io.BytesIO(svg_str.encode()))
+        return icon
 
     def update_all(self, now):
         if now - self.last_update >= self.update_cycle:
@@ -157,14 +157,13 @@ class WeatherWidget(BaseWidget):
         window.screen.blit(descrip_surf, (x, y1))
 
         # icons
-        main_icon = self.get_icon(self.realtime_info["icon"], 256)
-        small_icon1 = self.get_icon(self.next24h_info[0]["icon"], 64)
-        small_icon2 = self.get_icon(self.next24h_info[1]["icon"], 64)
-        main_icon = pygame.transform.scale(main_icon, (156,156))
+        main_icon = self.get_icon(self.realtime_info["icon"], 128)
+        small_icon1 = self.get_icon(self.next24h_info[0]["icon"], 56)
+        small_icon2 = self.get_icon(self.next24h_info[1]["icon"], 56)
 
-        window.screen.blit(main_icon, (x1, y-20))
-        x2 = x1+main_icon.get_rect().width-15
-        window.screen.blit(small_icon1, (x2, y-3))
+        window.screen.blit(main_icon, (x1, y-10))
+        x2 = x1+main_icon.get_rect().width+15
+        window.screen.blit(small_icon1, (x2, y))
         y2 = y+small_icon1.get_rect().height
         window.screen.blit(small_icon2, (x2,y2))
 
