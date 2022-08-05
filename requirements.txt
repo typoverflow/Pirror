@@ -2,7 +2,7 @@ requests_oauthlib==1.3.0
 numpy==1.19.2
 pandas==1.1.3
 requests==2.24.0
-sxtwl==1.1.0
+sxtwl
 PyYAML==6.0
 CairoSVG==2.5.2
 # > For Raspberry-Pi only:
